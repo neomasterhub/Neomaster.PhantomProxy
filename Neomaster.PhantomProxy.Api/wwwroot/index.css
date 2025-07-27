@@ -1,0 +1,55 @@
+body {
+  margin: 0;
+}
+
+#loading-banner {
+  position: absolute;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgb(255, 255, 255, 0.5);
+}
+
+#browse-form {
+  margin: 0;
+  padding: 7px 0;
+  height: 30px;
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  background-color: antiquewhite;
+  position: relative;
+}
+
+#browse-url {
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+#browse-button {
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  line-height: 30px;
+  white-space: nowrap;
+}
+
+#browse-error {
+  position: absolute;
+  bottom: -25px;
+  padding: 3px 10px;
+  max-width: 500px;
+  background-color: rgba(255, 149, 198, 0.5);
+  color: firebrick;
+  font-family: monospace;
+}
+
+#viewbox {
+  margin: 0;
+  border: none;
+  width: 100vw;
+  height: calc(100vh - 50px);
+}
