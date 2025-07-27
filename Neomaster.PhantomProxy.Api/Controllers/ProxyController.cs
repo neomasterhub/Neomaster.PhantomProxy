@@ -43,14 +43,14 @@ public class ProxyController(
 
       if (response.ContentType == MediaTypeNames.Text.Html)
       {
-        // TODO: Proxy links in HTML content.
-        // TODO: Handle <base>?
+        var proxyBaseUrl = $"{Request.Scheme}://{Request.Host}/browse?url=";
+        content = proxyService.RewriteLinksWithProxyUrls(content, new Uri(url), proxyBaseUrl);
       }
 
       return Content(content, response.ContentType);
     }
 
-    throw new NotSupportedException($"Response contains unsupported type content: {response.ContentType}.");
+    throw new NotSupportedException($"Unsupported content type: {response.ContentType}.");
   }
 
   private static string[] GetConstValues(params Type[] types)
