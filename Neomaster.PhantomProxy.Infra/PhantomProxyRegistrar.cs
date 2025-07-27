@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Neomaster.PhantomProxy.App;
 
@@ -12,11 +13,19 @@ public static class PhantomProxyRegistrar
   /// Registers Phantom Proxy services and HTTP client.
   /// </summary>
   /// <param name="services">Service collection.</param>
+  /// <param name="configuration">Configuration settings.</param>
   /// <returns>Updated service collection.</returns>
-  public static IServiceCollection AddPhantomProxy(this IServiceCollection services)
+  public static IServiceCollection AddPhantomProxy(this IServiceCollection services, IConfiguration configuration)
   {
-    services.AddHttpClient(nameof(PhantomProxy));
+    var settings = configuration.GetSection(nameof(PhantomProxySettings)).Get<PhantomProxySettings>();
+    ArgumentNullException.ThrowIfNull(settings, nameof(settings));
+
     services.AddScoped<IProxyService, ProxyService>();
+    services.AddHttpClient(nameof(PhantomProxy), client =>
+    {
+      client.DefaultRequestHeaders.UserAgent.ParseAdd(settings.UserAgent);
+      client.DefaultRequestHeaders.Referrer = new Uri(settings.Referrer);
+    });
 
     return services;
   }

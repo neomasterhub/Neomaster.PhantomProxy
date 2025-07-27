@@ -10,7 +10,7 @@ builder.Services.AddSwaggerGen(options =>
   var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
   options.IncludeXmlComments(xmlPath);
 });
-builder.Services.AddPhantomProxy();
+builder.Services.AddPhantomProxy(builder.Configuration);
 
 var app = builder.Build();
 app.Use(async (context, next) =>
