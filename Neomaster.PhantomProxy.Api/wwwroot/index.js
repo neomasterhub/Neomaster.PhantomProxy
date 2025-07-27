@@ -7,6 +7,7 @@ const frame = document.getElementById('viewbox');
 form.addEventListener('submit', async e => {
   e.preventDefault();
   errorBox.textContent = '';
+  errorBox.style.display = 'none';
 
   const url = urlInput.value?.trim();
   if (!url) {
@@ -19,6 +20,7 @@ form.addEventListener('submit', async e => {
     const response = await fetch(`/browse?url=${encodeURIComponent(url)}`);
     if (!response.ok) {
       errorBox.textContent = 'Failed to fetch content.';
+      errorBox.style.display = 'flex';
       console.error(response);
       return;
     }
@@ -30,6 +32,7 @@ form.addEventListener('submit', async e => {
     frame.src = blobUrl;
   } catch (error) {
     errorBox.textContent = 'Failed to load content.';
+    errorBox.style.display = 'flex';
     console.error(error);
   } finally {
     loadingBanner.style.display = 'none';

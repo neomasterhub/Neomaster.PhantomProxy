@@ -38,6 +38,7 @@ body {
 }
 
 #browse-error {
+  display: none;
   position: absolute;
   bottom: -25px;
   padding: 3px 10px;
