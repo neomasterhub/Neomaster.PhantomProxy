@@ -1,4 +1,5 @@
 using System.Reflection;
+using Neomaster.PhantomProxy.Infra;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
@@ -9,6 +10,7 @@ builder.Services.AddSwaggerGen(options =>
   var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
   options.IncludeXmlComments(xmlPath);
 });
+builder.Services.AddPhantomProxy();
 
 var app = builder.Build();
 app.Use(async (context, next) =>
