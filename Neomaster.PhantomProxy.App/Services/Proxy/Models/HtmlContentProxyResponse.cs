@@ -6,7 +6,12 @@ namespace Neomaster.PhantomProxy.App;
 public record HtmlContentProxyResponse
 {
   /// <summary>
-  /// HTML content returned from the target URL.
+  /// HTML content bytes.
   /// </summary>
-  public string RawHtml { get; init; } = string.Empty;
+  public byte[] ContentBytes { get; init; } = [];
+
+  /// <summary>
+  /// HTML content type.
+  /// </summary>
+  public string ContentType { get; init; } = string.Empty;
 }
