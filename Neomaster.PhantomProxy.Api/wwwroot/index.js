@@ -19,6 +19,7 @@ form.addEventListener('submit', async e => {
     const response = await fetch(`/browse?url=${encodeURIComponent(url)}`);
     if (!response.ok) {
       errorBox.textContent = 'Failed to fetch content.';
+      console.error(response);
       return;
     }
 
@@ -29,6 +30,7 @@ form.addEventListener('submit', async e => {
     frame.src = blobUrl;
   } catch (error) {
     errorBox.textContent = 'Failed to load content.';
+    console.error(error);
   } finally {
     loadingBanner.style.display = 'none';
   }
