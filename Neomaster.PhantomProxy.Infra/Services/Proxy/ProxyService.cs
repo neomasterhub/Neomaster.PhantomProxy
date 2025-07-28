@@ -47,8 +47,7 @@ public class ProxyService(
     var doc = new HtmlDocument();
     doc.LoadHtml(htmlDoc);
 
-    RewriteAttributeValuesWithProxyUrls(doc, "href", baseUrl, proxyUrlPrefix);
-    RewriteAttributeValuesWithProxyUrls(doc, "src", baseUrl, proxyUrlPrefix);
+    RewriteAttributeValuesWithProxyUrls(doc, baseUrl, proxyUrlPrefix);
 
     var rewrittenHtmlDoc = doc.DocumentNode.OuterHtml;
 
