@@ -13,7 +13,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddPhantomProxy(builder.Configuration);
 
-builder.WebHost.UseUrls($"http://*:{Environment.GetEnvironmentVariable("PORT") ?? "5000"}");
+//builder.WebHost.UseUrls($"http://*:{Environment.GetEnvironmentVariable("PORT") ?? "5000"}");
 
 var app = builder.Build();
 app.Use(async (context, next) =>
