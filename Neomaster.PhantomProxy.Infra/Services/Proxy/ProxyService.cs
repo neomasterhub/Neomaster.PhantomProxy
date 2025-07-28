@@ -1,4 +1,3 @@
-using System.Net;
 using HtmlAgilityPack;
 using Neomaster.PhantomProxy.App;
 
@@ -57,29 +56,26 @@ public class ProxyService(
   }
 
   /// <inheritdoc/>
-  public void RewriteAttributeValuesWithProxyUrls(HtmlDocument doc, string attrName, Uri baseUri, string proxyUrlPrefix)
+  public void RewriteAttributeValuesWithProxyUrls(HtmlDocument doc, Uri baseUri, string proxyUrlPrefix)
   {
     ArgumentNullException.ThrowIfNull(doc);
-    ArgumentException.ThrowIfNullOrWhiteSpace(attrName);
     ArgumentNullException.ThrowIfNull(baseUri);
     ArgumentException.ThrowIfNullOrWhiteSpace(proxyUrlPrefix);
 
-    var nodes = doc.DocumentNode.SelectNodes($"//*[@{attrName}]");
-    if (nodes == null)
-    {
-      return;
-    }
+    var attrs = doc.DocumentNode
+      .DescendantsAndSelf()
+      .SelectMany(n => n.Attributes);
 
-    foreach (var node in nodes)
+    foreach (var attr in attrs)
     {
-      var attrValue = node.GetAttributeValue(attrName, null!);
+      var attrValue = attr.DeEntitizeValue;
+
       if (string.IsNullOrWhiteSpace(attrValue)
-        || attrValue.StartsWith('#'))
+        || attrValue.StartsWith('#')
+        || attrValue.StartsWith(proxyUrlPrefix))
       {
         continue;
       }
-
-      attrValue = WebUtility.HtmlDecode(attrValue);
 
       if (!Uri.TryCreate(attrValue, UriKind.RelativeOrAbsolute, out var uri))
       {
@@ -92,7 +88,7 @@ public class ProxyService(
       }
 
       var proxiedUrl = $"{proxyUrlPrefix}{Uri.EscapeDataString(uri.AbsoluteUri)}";
-      node.SetAttributeValue(attrName, proxiedUrl);
+      attr.Value = proxiedUrl;
     }
   }
 }

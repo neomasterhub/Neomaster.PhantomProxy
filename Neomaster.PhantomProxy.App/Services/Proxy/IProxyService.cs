@@ -27,8 +27,7 @@ public interface IProxyService
   /// Rewrites attribute values in HTML document to proxy URLs.
   /// </summary>
   /// <param name="doc">HTML document.</param>
-  /// <param name="attrName">Attribute name.</param>
   /// <param name="baseUri">Base URI used to resolve relative links.</param>
   /// <param name="proxyUrlPrefix">Prefix of proxied URLs.</param>
-  void RewriteAttributeValuesWithProxyUrls(HtmlDocument doc, string attrName, Uri baseUri, string proxyUrlPrefix);
+  void RewriteAttributeValuesWithProxyUrls(HtmlDocument doc, Uri baseUri, string proxyUrlPrefix);
 }
