@@ -1,4 +1,5 @@
 using System.Reflection;
+using Microsoft.AspNetCore.HttpOverrides;
 using Neomaster.PhantomProxy.Infra;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,10 @@ app.Use(async (context, next) =>
   context.Response.Headers.Pragma = "no-cache";
   context.Response.Headers.Expires = "0";
   await next();
+});
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+  ForwardedHeaders = ForwardedHeaders.XForwardedProto,
 });
 app.UseStaticFiles();
 app.UseSwagger();
