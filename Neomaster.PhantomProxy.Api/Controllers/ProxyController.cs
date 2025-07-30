@@ -55,8 +55,13 @@ public class ProxyController(
     var proxyBaseUrl = $"{Request.Scheme}://{Request.Host}/browse?url=";
 
     var contentBytes = response.ContentBytes;
-    var contentText = Encoding.UTF8.GetString(response.ContentBytes);
-    contentText = proxyService.RewriteLinksWithProxyUrls(contentText, new Uri(url), proxyBaseUrl);
+    var contentText = Encoding.UTF8.GetString(contentBytes);
+
+    if (response.ContentType == MediaTypeNames.Text.Html)
+    {
+      contentText = proxyService.RewriteLinksWithProxyUrls(contentText, new Uri(url), proxyBaseUrl);
+    }
+
     contentBytes = Encoding.UTF8.GetBytes(contentText);
 
     if (_fileMimeTypes.Contains(response.ContentType))
