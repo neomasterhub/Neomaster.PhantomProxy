@@ -4,6 +4,7 @@ Anonymous browser proxy inspired by [browser.lol](https://browser.lol).
 
 ## 📅 Roadmap
 - [x] Proxy URLs in standard HTML and SVG attributes
+- [ ] Hide target URL in Network tab (POST request, encrypting)
 - [ ] Display application version
 - [ ] Add infrastructure-level unit tests
 - [ ] Write deployment instruction
