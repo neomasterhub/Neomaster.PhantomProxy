@@ -20,6 +20,7 @@ public static class PhantomProxyRegistrar
     var settings = configuration.GetSection(nameof(PhantomProxySettings)).Get<PhantomProxySettings>();
     ArgumentNullException.ThrowIfNull(settings, nameof(settings));
 
+    services.AddSingleton(settings);
     services.AddScoped<IProxyService, ProxyService>();
     services.AddHttpClient(nameof(PhantomProxy), client =>
     {

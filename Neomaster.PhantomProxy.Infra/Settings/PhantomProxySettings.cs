@@ -14,4 +14,9 @@ public record PhantomProxySettings
   /// Value for <c>Referrer</c> header.
   /// </summary>
   public string Referrer { get; init; } = string.Empty;
+
+  /// <summary>
+  /// Names of attributes with URL values.
+  /// </summary>
+  public string[] UrlAttributeNames { get; init; } = [];
 }

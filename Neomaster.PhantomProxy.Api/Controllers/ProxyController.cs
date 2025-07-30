@@ -31,26 +31,34 @@ public class ProxyController(
   {
     var request = new HtmlContentProxyRequest { Url = url };
     var response = await proxyService.ProxyRequestHtmlContentAsync(request);
+    var proxyBaseUrl = $"{Request.Scheme}://{Request.Host}/browse?url=";
 
     if (_fileMimeTypes.Contains(response.ContentType))
     {
-      return File(response.ContentBytes, response.ContentType);
+      var contentBytes = response.ContentBytes;
+      if (response.ContentType == MediaTypeNames.Image.Svg)
+      {
+        var contentText = Encoding.UTF8.GetString(response.ContentBytes);
+        contentText = proxyService.RewriteLinksWithProxyUrls(contentText, new Uri(url), proxyBaseUrl);
+        contentBytes = Encoding.UTF8.GetBytes(contentText);
+      }
+
+      return File(contentBytes, response.ContentType);
     }
 
     if (_textMimeTypes.Contains(response.ContentType))
     {
-      var content = Encoding.UTF8.GetString(response.ContentBytes);
+      var contentText = Encoding.UTF8.GetString(response.ContentBytes);
 
       if (response.ContentType == MediaTypeNames.Text.Html)
       {
-        var proxyBaseUrl = $"{Request.Scheme}://{Request.Host}/browse?url=";
-        content = proxyService.RewriteLinksWithProxyUrls(content, new Uri(url), proxyBaseUrl);
+        contentText = proxyService.RewriteLinksWithProxyUrls(contentText, new Uri(url), proxyBaseUrl);
       }
 
-      return Content(content, response.ContentType);
+      return Content(contentText, response.ContentType);
     }
 
-    throw new NotSupportedException($"Unsupported content type: {response.ContentType}.");
+    return StatusCode(StatusCodes.Status415UnsupportedMediaType, $"Unsupported content type: {response.ContentType}.");
   }
 
   private static string[] GetConstValues(params Type[] types)

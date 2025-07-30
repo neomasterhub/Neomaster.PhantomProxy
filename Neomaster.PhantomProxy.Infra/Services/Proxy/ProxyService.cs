@@ -5,6 +5,7 @@ namespace Neomaster.PhantomProxy.Infra;
 
 /// <inheritdoc/>
 public class ProxyService(
+  PhantomProxySettings settings,
   IHttpClientFactory httpClientFactory)
   : IProxyService
 {
@@ -63,7 +64,8 @@ public class ProxyService(
 
     var attrs = doc.DocumentNode
       .DescendantsAndSelf()
-      .SelectMany(n => n.Attributes);
+      .SelectMany(n => n.Attributes)
+      .Where(a => settings.UrlAttributeNames.Contains(a.Name));
 
     foreach (var attr in attrs)
     {
