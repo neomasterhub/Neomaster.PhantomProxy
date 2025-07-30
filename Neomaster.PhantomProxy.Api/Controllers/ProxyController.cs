@@ -2,6 +2,8 @@ using System.Net.Mime;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Neomaster.PhantomProxy.App;
+using Neomaster.PhantomProxy.Common;
+using Neomaster.PhantomProxy.Infra;
 
 namespace Neomaster.PhantomProxy.Api;
 
@@ -9,7 +11,8 @@ namespace Neomaster.PhantomProxy.Api;
 /// Controller for anonymously proxying requests.
 /// </summary>
 public class ProxyController(
-  IProxyService proxyService)
+  IProxyService proxyService,
+  PhantomProxySettings settings)
   : ApiControllerBase
 {
   private static readonly string[] _fileMimeTypes;
@@ -29,7 +32,9 @@ public class ProxyController(
   public IActionResult Index()
   {
     var path = Path.Combine(Directory.GetCurrentDirectory(), "index.html");
-    var html = System.IO.File.ReadAllText(path);
+    var html = System.IO.File
+      .ReadAllText(path)
+      .Replace("$password$", settings.EncryptionPassword);
 
     return Content(html, MediaTypeNames.Text.Html);
   }
@@ -37,12 +42,13 @@ public class ProxyController(
   /// <summary>
   /// Returns content of given url base64.
   /// </summary>
-  /// <param name="url">Target url base64.</param>
+  /// <param name="url">Base64-encoded encrypted target URL.</param>
   /// <returns>Content.</returns>
   [HttpGet("/browse")]
   public async Task<IActionResult> BrowseAsync([FromQuery] string url)
   {
-    url = Encoding.UTF8.GetString(Convert.FromBase64String(url));
+    var urlDecryptedBytes = AesGcmEncryptor.Decrypt(Convert.FromBase64String(url), settings.EncryptionPassword);
+    url = Encoding.UTF8.GetString(urlDecryptedBytes);
 
     var request = new HtmlContentProxyRequest { Url = url };
     var response = await proxyService.ProxyRequestHtmlContentAsync(request);

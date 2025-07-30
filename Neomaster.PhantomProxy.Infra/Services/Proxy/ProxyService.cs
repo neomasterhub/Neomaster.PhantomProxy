@@ -1,6 +1,7 @@
 using System.Text;
 using HtmlAgilityPack;
 using Neomaster.PhantomProxy.App;
+using Neomaster.PhantomProxy.Common;
 
 namespace Neomaster.PhantomProxy.Infra;
 
@@ -89,7 +90,8 @@ public class ProxyService(
         uri = new Uri(baseUri, uri);
       }
 
-      var targetUrl = Convert.ToBase64String(Encoding.UTF8.GetBytes(uri.AbsoluteUri));
+      var targetUrlBytes = AesGcmEncryptor.Encrypt(Encoding.UTF8.GetBytes(uri.AbsoluteUri), settings.EncryptionPassword);
+      var targetUrl = Uri.EscapeDataString(Convert.ToBase64String(targetUrlBytes));
       var proxiedUrl = $"{proxyUrlPrefix}{targetUrl}";
       attr.Value = proxiedUrl;
     }
