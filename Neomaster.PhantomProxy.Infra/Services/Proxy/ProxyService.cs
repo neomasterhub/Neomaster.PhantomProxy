@@ -1,3 +1,4 @@
+using System.Text;
 using HtmlAgilityPack;
 using Neomaster.PhantomProxy.App;
 
@@ -88,7 +89,8 @@ public class ProxyService(
         uri = new Uri(baseUri, uri);
       }
 
-      var proxiedUrl = $"{proxyUrlPrefix}{Uri.EscapeDataString(uri.AbsoluteUri)}";
+      var targetUrl = Convert.ToBase64String(Encoding.UTF8.GetBytes(uri.AbsoluteUri));
+      var proxiedUrl = $"{proxyUrlPrefix}{targetUrl}";
       attr.Value = proxiedUrl;
     }
   }

@@ -35,13 +35,15 @@ public class ProxyController(
   }
 
   /// <summary>
-  /// Returns raw html content of given url.
+  /// Returns content of given url base64.
   /// </summary>
-  /// <param name="url">Target url.</param>
-  /// <returns>Raw html content.</returns>
+  /// <param name="url">Target url base64.</param>
+  /// <returns>Content.</returns>
   [HttpGet("/browse")]
   public async Task<IActionResult> BrowseAsync([FromQuery] string url)
   {
+    url = Encoding.UTF8.GetString(Convert.FromBase64String(url));
+
     var request = new HtmlContentProxyRequest { Url = url };
     var response = await proxyService.ProxyRequestHtmlContentAsync(request);
     var proxyBaseUrl = $"{Request.Scheme}://{Request.Host}/browse?url=";

@@ -17,7 +17,8 @@ form.addEventListener('submit', async e => {
   loadingBanner.style.display = 'flex';
 
   try {
-    const response = await fetch(`/browse?url=${encodeURIComponent(url)}`);
+    const urlBase64 = btoa(url);
+    const response = await fetch(`/browse?url=${urlBase64}`);
     if (!response.ok) {
       errorBox.textContent = 'Failed to fetch content.';
       errorBox.style.display = 'flex';
