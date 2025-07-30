@@ -22,11 +22,24 @@ public class ProxyController(
   }
 
   /// <summary>
+  /// Returns index page.
+  /// </summary>
+  /// <returns>Index page.</returns>
+  [HttpGet("/")]
+  public IActionResult Index()
+  {
+    var path = Path.Combine(Directory.GetCurrentDirectory(), "index.html");
+    var html = System.IO.File.ReadAllText(path);
+
+    return Content(html, MediaTypeNames.Text.Html);
+  }
+
+  /// <summary>
   /// Returns raw html content of given url.
   /// </summary>
   /// <param name="url">Target url.</param>
   /// <returns>Raw html content.</returns>
-  [HttpGet("browse")]
+  [HttpGet("/browse")]
   public async Task<IActionResult> BrowseAsync([FromQuery] string url)
   {
     var request = new HtmlContentProxyRequest { Url = url };
