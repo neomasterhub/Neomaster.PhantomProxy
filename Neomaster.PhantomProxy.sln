@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neomaster.PhantomProxy.Infr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neomaster.PhantomProxy.Common", "Neomaster.PhantomProxy.Common\Neomaster.PhantomProxy.Common.csproj", "{F95601E9-4A94-4E70-936C-BF1EB72D3B8B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neomaster.PhantomProxy.Common.UnitTests", "Neomaster.PhantomProxy.Common.UnitTests\Neomaster.PhantomProxy.Common.UnitTests.csproj", "{2639F49F-1D7F-4ADA-8B1C-FFC1DD6DB0AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,10 @@ Global
 		{F95601E9-4A94-4E70-936C-BF1EB72D3B8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F95601E9-4A94-4E70-936C-BF1EB72D3B8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F95601E9-4A94-4E70-936C-BF1EB72D3B8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2639F49F-1D7F-4ADA-8B1C-FFC1DD6DB0AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2639F49F-1D7F-4ADA-8B1C-FFC1DD6DB0AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2639F49F-1D7F-4ADA-8B1C-FFC1DD6DB0AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2639F49F-1D7F-4ADA-8B1C-FFC1DD6DB0AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
