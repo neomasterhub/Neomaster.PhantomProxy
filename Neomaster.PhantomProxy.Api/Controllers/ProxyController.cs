@@ -62,8 +62,6 @@ public class ProxyController(
       contentText = proxyService.RewriteLinksWithProxyUrls(contentText, new Uri(url), proxyBaseUrl);
     }
 
-    contentBytes = Encoding.UTF8.GetBytes(contentText);
-
     if (_fileMimeTypes.Contains(response.ContentType))
     {
       return File(contentBytes, response.ContentType);
