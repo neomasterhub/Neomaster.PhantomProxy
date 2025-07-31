@@ -1,3 +1,7 @@
+* {
+  outline: none;
+}
+
 body {
   margin: 0;
 }
@@ -24,6 +28,7 @@ body {
 }
 
 #browse-url {
+  border: 1px solid burlywood;
   width: 100%;
   max-width: 500px;
   text-align: center;
@@ -35,6 +40,12 @@ body {
   align-items: center;
   line-height: 30px;
   white-space: nowrap;
+  background-color: bisque;
+  border: 1px solid burlywood;
+}
+
+#browse-button:hover {
+  background-color: blanchedalmond;
 }
 
 #browse-error {
