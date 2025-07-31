@@ -87,7 +87,9 @@ public class XmlHelperUnitTests
     Assert.Equal(expected.Length, actual.Length);
     Assert.All(actual, (a, i) =>
     {
-      Assert.Equal(a, expected[i]);
+      var e = expected[i];
+      Assert.Equal(a.Url, e.Url);
+      Assert.Equal(a.Descriptor, e.Descriptor);
     });
   }
 
@@ -120,7 +122,9 @@ public class XmlHelperUnitTests
     Assert.Equal(expected.Length, actual.Length);
     Assert.All(actual, (a, i) =>
     {
-      Assert.Equal(a, expected[i]);
+      var e = expected[i];
+      Assert.Equal(a.Url, e.Url);
+      Assert.Equal(a.Descriptor, e.Descriptor);
     });
   }
 }

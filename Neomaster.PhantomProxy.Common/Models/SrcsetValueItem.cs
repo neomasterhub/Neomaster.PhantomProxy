@@ -1,3 +1,5 @@
+using HtmlAgilityPack;
+
 namespace Neomaster.PhantomProxy.Common;
 
 /// <summary>
@@ -5,6 +7,11 @@ namespace Neomaster.PhantomProxy.Common;
 /// </summary>
 public record SrcsetValueItem
 {
+  /// <summary>
+  /// HTML attribute that contains <c>srcset</c> value.
+  /// </summary>
+  public HtmlAttribute HtmlAttribute { get; init; } = default!;
+
   /// <summary>
   /// URL.
   /// </summary>

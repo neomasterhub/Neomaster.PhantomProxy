@@ -55,6 +55,7 @@ public static class XmlHelper
 
         var item = new SrcsetValueItem
         {
+          HtmlAttribute = attr,
           Url = parts[0],
           Descriptor = parts.Length > 1 ? parts[1] : string.Empty,
         };
