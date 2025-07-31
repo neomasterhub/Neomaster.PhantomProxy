@@ -3,7 +3,9 @@
 Anonymous browser proxy inspired by [browser.lol](https://browser.lol).
 
 ## 📅 Roadmap
-- [x] Proxy URLs in standard HTML and SVG attributes
+- [x] Proxy URLs in standard HTML attributes
+- [ ] Proxy URLs in standard SVG attributes
+- [ ] Proxy CSS URLs (inline styles and external files)
 - [x] Proxy `srcset` attribute URLs
 - [x] Encrypt target URL in Network tab
 - [x] Encryptor unit tests
@@ -11,6 +13,5 @@ Anonymous browser proxy inspired by [browser.lol](https://browser.lol).
 - [ ] Add infrastructure-level unit tests
 - [ ] Write deployment instruction
 - [ ] Publish NuGet package
-- [ ] Proxy CSS URLs (inline styles and external files)
 - [ ] Optionally remove `<script>` tags
 - [ ] Caching for proxied resources
