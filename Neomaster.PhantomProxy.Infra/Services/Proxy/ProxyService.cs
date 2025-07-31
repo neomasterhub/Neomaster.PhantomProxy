@@ -70,24 +70,33 @@ public class ProxyService(
         continue;
       }
 
-      if (!Uri.TryCreate(attrValue, UriKind.RelativeOrAbsolute, out var uri))
-      {
-        continue;
-      }
-
-      if (!uri.IsAbsoluteUri)
-      {
-        uri = new Uri(baseUrl, uri);
-      }
-
-      var targetUrlBytes = AesGcmEncryptor.Encrypt(Encoding.UTF8.GetBytes(uri.AbsoluteUri), settings.EncryptionPassword);
-      var targetUrl = Uri.EscapeDataString(Convert.ToBase64String(targetUrlBytes));
-      var proxiedUrl = $"{proxyUrlPrefix}{targetUrl}";
-      attr.Value = proxiedUrl;
+      attr.Value = ProxyUrl(attrValue, baseUrl, proxyUrlPrefix);
     }
 
     var rewrittenHtmlDoc = doc.DocumentNode.OuterHtml;
 
     return rewrittenHtmlDoc;
+  }
+
+  /// <inheritdoc/>
+  public string ProxyUrl(string url, Uri baseUrl, string proxyUrlPrefix)
+  {
+    ArgumentException.ThrowIfNullOrWhiteSpace(url);
+
+    if (!Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out var uri))
+    {
+      return url;
+    }
+
+    if (!uri.IsAbsoluteUri)
+    {
+      uri = new Uri(baseUrl, uri);
+    }
+
+    var targetUrlBytes = AesGcmEncryptor.Encrypt(Encoding.UTF8.GetBytes(uri.AbsoluteUri), settings.EncryptionPassword);
+    var targetUrl = Uri.EscapeDataString(Convert.ToBase64String(targetUrlBytes));
+    var proxiedUrl = $"{proxyUrlPrefix}{targetUrl}";
+
+    return proxiedUrl;
   }
 }
