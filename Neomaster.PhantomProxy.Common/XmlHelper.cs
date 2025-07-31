@@ -43,7 +43,7 @@ public static class XmlHelper
     foreach (var attr in attrs)
     {
       var valueItems = attr.DeEntitizeValue
-        .Split(',')
+        .Split(',', StringSplitOptions.RemoveEmptyEntries)
         .Select(v => v.Trim())
         .Where(v => !string.IsNullOrEmpty(v));
 
