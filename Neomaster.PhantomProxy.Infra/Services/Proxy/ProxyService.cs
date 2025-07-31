@@ -51,14 +51,21 @@ public class ProxyService(
     doc.LoadHtml(htmlDoc);
 
     var attrs = doc.GetHtmlAttributes(settings.UrlAttributeNames);
+    var ignoredUrlPrefixes = InfraConsts.IgnoredUrlPrefixes
+      .Append(proxyUrlPrefix)
+      .ToArray();
 
     foreach (var attr in attrs)
     {
-      var attrValue = attr.DeEntitizeValue;
+      if (string.IsNullOrWhiteSpace(attr.Value))
+      {
+        continue;
+      }
 
-      if (string.IsNullOrWhiteSpace(attrValue)
-        || attrValue.StartsWith('#')
-        || attrValue.StartsWith(proxyUrlPrefix))
+      var attrValue = attr.DeEntitizeValue.Trim();
+
+      if (ignoredUrlPrefixes.Any(
+        prefix => attrValue.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
       {
         continue;
       }
