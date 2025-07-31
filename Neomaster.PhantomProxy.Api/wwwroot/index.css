@@ -64,6 +64,16 @@ body {
   font-family: monospace;
 }
 
+#version {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  right: 15px;
+  height: 100%;
+  color: darkgoldenrod;
+}
+
 #viewbox {
   margin: 0;
   border: none;
