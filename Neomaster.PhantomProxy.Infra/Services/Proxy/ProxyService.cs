@@ -74,9 +74,9 @@ public class ProxyService(
     }
 
     var allSrcSetValueItems = doc.GetAllSrcsetValueItems();
-    foreach(var vi in allSrcSetValueItems)
+    foreach (var vi in allSrcSetValueItems)
     {
-      vi.HtmlAttribute.Value = vi.HtmlAttribute.Value.Replace(
+      vi.HtmlAttribute.Value = vi.HtmlAttribute.DeEntitizeValue.Replace(
         vi.Url,
         ProxyUrl(vi.Url, baseUrl, proxyUrlPrefix));
     }
