@@ -1,5 +1,3 @@
-using HtmlAgilityPack;
-
 namespace Neomaster.PhantomProxy.App;
 
 /// <summary>
@@ -8,11 +6,11 @@ namespace Neomaster.PhantomProxy.App;
 public interface IProxyService
 {
   /// <summary>
-  /// Proxies the given request and returns HTML content.
+  /// Proxies the given request and returns content.
   /// </summary>
   /// <param name="request">Proxy request with the target URL.</param>
-  /// <returns>Proxy response containing HTML content.</returns>
-  Task<HtmlContentProxyResponse> ProxyRequestHtmlContentAsync(HtmlContentProxyRequest request);
+  /// <returns>Proxy response.</returns>
+  Task<ProxyResponse> ProxyRequestHtmlContentAsync(ProxyRequest request);
 
   /// <summary>
   /// Rewrites links in HTML document to proxy URLs.
@@ -21,13 +19,5 @@ public interface IProxyService
   /// <param name="baseUrl">Base URL for resolving relative links.</param>
   /// <param name="proxyUrlPrefix">Prefix of proxied URLs.</param>
   /// <returns>Rewritten HTML document with proxied links.</returns>
-  string RewriteLinksWithProxyUrls(string htmlDoc, Uri baseUrl, string proxyUrlPrefix);
-
-  /// <summary>
-  /// Rewrites attribute values in HTML document to proxy URLs.
-  /// </summary>
-  /// <param name="doc">HTML document.</param>
-  /// <param name="baseUri">Base URI used to resolve relative links.</param>
-  /// <param name="proxyUrlPrefix">Prefix of proxied URLs.</param>
-  void RewriteAttributeValuesWithProxyUrls(HtmlDocument doc, Uri baseUri, string proxyUrlPrefix);
+  string ProxyHtmlUrls(string htmlDoc, Uri baseUrl, string proxyUrlPrefix);
 }

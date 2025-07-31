@@ -14,7 +14,7 @@ public class ProxyService(
   private readonly HttpClient _httpClient = httpClientFactory.CreateClient(nameof(PhantomProxy));
 
   /// <inheritdoc/>
-  public async Task<HtmlContentProxyResponse> ProxyRequestHtmlContentAsync(HtmlContentProxyRequest request)
+  public async Task<ProxyResponse> ProxyRequestHtmlContentAsync(ProxyRequest request)
   {
     if (string.IsNullOrWhiteSpace(request.Url))
     {
@@ -31,7 +31,7 @@ public class ProxyService(
     var responseMessage = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
     responseMessage.EnsureSuccessStatusCode();
 
-    var result = new HtmlContentProxyResponse
+    var result = new ProxyResponse
     {
       ContentBytes = await responseMessage.Content.ReadAsByteArrayAsync(),
       ContentType = responseMessage.GetContentType(url).ToLower(),
@@ -41,7 +41,7 @@ public class ProxyService(
   }
 
   /// <inheritdoc/>
-  public string RewriteLinksWithProxyUrls(string htmlDoc, Uri baseUrl, string proxyUrlPrefix)
+  public string ProxyHtmlUrls(string htmlDoc, Uri baseUrl, string proxyUrlPrefix)
   {
     ArgumentNullException.ThrowIfNull(baseUrl);
     ArgumentException.ThrowIfNullOrWhiteSpace(htmlDoc);
@@ -49,20 +49,6 @@ public class ProxyService(
 
     var doc = new HtmlDocument();
     doc.LoadHtml(htmlDoc);
-
-    RewriteAttributeValuesWithProxyUrls(doc, baseUrl, proxyUrlPrefix);
-
-    var rewrittenHtmlDoc = doc.DocumentNode.OuterHtml;
-
-    return rewrittenHtmlDoc;
-  }
-
-  /// <inheritdoc/>
-  public void RewriteAttributeValuesWithProxyUrls(HtmlDocument doc, Uri baseUri, string proxyUrlPrefix)
-  {
-    ArgumentNullException.ThrowIfNull(doc);
-    ArgumentNullException.ThrowIfNull(baseUri);
-    ArgumentException.ThrowIfNullOrWhiteSpace(proxyUrlPrefix);
 
     var attrs = doc.DocumentNode
       .DescendantsAndSelf()
@@ -87,7 +73,7 @@ public class ProxyService(
 
       if (!uri.IsAbsoluteUri)
       {
-        uri = new Uri(baseUri, uri);
+        uri = new Uri(baseUrl, uri);
       }
 
       var targetUrlBytes = AesGcmEncryptor.Encrypt(Encoding.UTF8.GetBytes(uri.AbsoluteUri), settings.EncryptionPassword);
@@ -95,5 +81,9 @@ public class ProxyService(
       var proxiedUrl = $"{proxyUrlPrefix}{targetUrl}";
       attr.Value = proxiedUrl;
     }
+
+    var rewrittenHtmlDoc = doc.DocumentNode.OuterHtml;
+
+    return rewrittenHtmlDoc;
   }
 }

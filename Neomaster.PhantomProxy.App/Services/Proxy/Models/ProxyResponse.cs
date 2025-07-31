@@ -1,17 +1,17 @@
 namespace Neomaster.PhantomProxy.App;
 
 /// <summary>
-/// Proxy response with HTML content.
+/// Proxy response.
 /// </summary>
-public record HtmlContentProxyResponse
+public record ProxyResponse
 {
   /// <summary>
-  /// HTML content bytes.
+  /// Content bytes.
   /// </summary>
   public byte[] ContentBytes { get; init; } = [];
 
   /// <summary>
-  /// HTML content type.
+  /// Content type.
   /// </summary>
   public string ContentType { get; init; } = string.Empty;
 }

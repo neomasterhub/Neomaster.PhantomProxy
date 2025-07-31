@@ -45,7 +45,7 @@ public class ProxyController(
     var urlDecryptedBytes = AesGcmEncryptor.Decrypt(Convert.FromBase64String(url), settings.EncryptionPassword);
     url = Encoding.UTF8.GetString(urlDecryptedBytes);
 
-    var request = new HtmlContentProxyRequest { Url = url };
+    var request = new ProxyRequest { Url = url };
     var response = await proxyService.ProxyRequestHtmlContentAsync(request);
     var proxyBaseUrl = $"{Request.Scheme}://{Request.Host}/browse?url=";
 
@@ -54,7 +54,7 @@ public class ProxyController(
 
     if (response.ContentType == MediaTypeNames.Text.Html)
     {
-      contentText = proxyService.RewriteLinksWithProxyUrls(contentText, new Uri(url), proxyBaseUrl);
+      contentText = proxyService.ProxyHtmlUrls(contentText, new Uri(url), proxyBaseUrl);
     }
 
     if (_fileMimeTypes.Contains(response.ContentType))

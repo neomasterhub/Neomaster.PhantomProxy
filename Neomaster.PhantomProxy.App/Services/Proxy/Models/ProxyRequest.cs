@@ -1,9 +1,9 @@
 namespace Neomaster.PhantomProxy.App;
 
 /// <summary>
-/// Proxy request for HTML content.
+/// Proxy request.
 /// </summary>
-public record HtmlContentProxyRequest
+public record ProxyRequest
 {
   /// <summary>
   /// Target URL to fetch.
