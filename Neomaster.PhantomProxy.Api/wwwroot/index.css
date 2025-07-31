@@ -6,6 +6,11 @@ body {
   margin: 0;
 }
 
+#logo {
+  position: absolute;
+  left: 15px;
+}
+
 #loading-banner {
   position: absolute;
   display: none;
@@ -30,7 +35,7 @@ body {
 #browse-url {
   border: 1px solid burlywood;
   width: 100%;
-  max-width: 500px;
+  max-width: 400px;
   text-align: center;
 }
 
@@ -40,12 +45,12 @@ body {
   align-items: center;
   line-height: 30px;
   white-space: nowrap;
-  background-color: bisque;
+  background-color: blanchedalmond;
   border: 1px solid burlywood;
 }
 
 #browse-button:hover {
-  background-color: blanchedalmond;
+  background-color: bisque;
 }
 
 #browse-error {
