@@ -3,7 +3,7 @@ const form = document.getElementById('browse-form');
 const urlInput = document.getElementById('browse-url');
 const errorBox = document.getElementById('browse-error');
 const frame = document.getElementById('viewbox');
-const password = document.getElementById('password').textContent;
+let password;
 
 async function encrypt(text, password) {
   const encoder = new TextEncoder();
@@ -59,6 +59,19 @@ form.addEventListener('submit', async e => {
   loadingBanner.style.display = 'flex';
 
   try {
+    if (!password) {
+      passwordResponse = await fetch('/password');
+
+      if (!passwordResponse.ok) {
+        errorBox.textContent = 'Failed to fetch encryption password.';
+        errorBox.style.display = 'flex';
+        console.error(response);
+        return;
+      }
+
+      password = await passwordResponse.text();
+    }
+
     const urlEncrypted = await encrypt(url, password);
     const response = await fetch(`/browse?url=${encodeURIComponent(urlEncrypted)}`);
     if (!response.ok) {

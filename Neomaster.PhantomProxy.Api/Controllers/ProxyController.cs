@@ -25,18 +25,13 @@ public class ProxyController(
   }
 
   /// <summary>
-  /// Returns index page.
+  /// Returns encryption password.
   /// </summary>
-  /// <returns>Index page.</returns>
-  [HttpGet("/")]
-  public IActionResult Index()
+  /// <returns>Encryption password.</returns>
+  [HttpGet("/password")]
+  public string GetPassword()
   {
-    var path = Path.Combine(Directory.GetCurrentDirectory(), "index.html");
-    var html = System.IO.File
-      .ReadAllText(path)
-      .Replace("$password$", settings.EncryptionPassword);
-
-    return Content(html, MediaTypeNames.Text.Html);
+    return settings.EncryptionPassword;
   }
 
   /// <summary>
