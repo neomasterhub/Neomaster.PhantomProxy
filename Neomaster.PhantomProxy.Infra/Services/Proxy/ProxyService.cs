@@ -50,10 +50,7 @@ public class ProxyService(
     var doc = new HtmlDocument();
     doc.LoadHtml(htmlDoc);
 
-    var attrs = doc.DocumentNode
-      .DescendantsAndSelf()
-      .SelectMany(n => n.Attributes)
-      .Where(a => settings.UrlAttributeNames.Contains(a.Name));
+    var attrs = doc.GetHtmlAttributes(settings.UrlAttributeNames);
 
     foreach (var attr in attrs)
     {

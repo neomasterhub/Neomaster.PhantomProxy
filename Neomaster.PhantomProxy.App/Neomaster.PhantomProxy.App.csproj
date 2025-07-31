@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.12.2" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Neomaster.PhantomProxy.Common\Neomaster.PhantomProxy.Common.csproj" />
   </ItemGroup>
 
