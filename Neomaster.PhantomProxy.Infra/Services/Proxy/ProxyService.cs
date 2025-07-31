@@ -50,12 +50,12 @@ public class ProxyService(
     var doc = new HtmlDocument();
     doc.LoadHtml(htmlDoc);
 
-    var attrs = doc.GetHtmlAttributes(settings.UrlAttributeNames);
     var ignoredUrlPrefixes = InfraConsts.IgnoredUrlPrefixes
       .Append(proxyUrlPrefix)
       .ToArray();
 
-    foreach (var attr in attrs)
+    var singleValueAttrs = doc.GetHtmlAttributes(settings.UrlAttributeNames);
+    foreach (var attr in singleValueAttrs)
     {
       if (string.IsNullOrWhiteSpace(attr.Value))
       {
@@ -71,6 +71,14 @@ public class ProxyService(
       }
 
       attr.Value = ProxyUrl(attrValue, baseUrl, proxyUrlPrefix);
+    }
+
+    var allSrcSetValueItems = doc.GetAllSrcsetValueItems();
+    foreach(var vi in allSrcSetValueItems)
+    {
+      vi.HtmlAttribute.Value = vi.HtmlAttribute.Value.Replace(
+        vi.Url,
+        ProxyUrl(vi.Url, baseUrl, proxyUrlPrefix));
     }
 
     var rewrittenHtmlDoc = doc.DocumentNode.OuterHtml;
