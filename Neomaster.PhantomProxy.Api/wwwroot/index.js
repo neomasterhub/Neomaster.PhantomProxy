@@ -3,47 +3,64 @@ const form = document.getElementById('browse-form');
 const urlInput = document.getElementById('browse-url');
 const errorBox = document.getElementById('browse-error');
 const frame = document.getElementById('viewbox');
-let password;
+let pem;
 
-async function encrypt(text, password) {
+function toBase64(bytes) {
+  return btoa(String.fromCharCode(...new Uint8Array(bytes)));
+}
+
+function getPemKeyBytes(pem) {
+  const keyBase64 = pem.replace(/-----.*?-----/g, '').replace(/\s+/g, '');
+  const keyText = atob(keyBase64);
+  const keyBytes = new Uint8Array(keyText.length);
+
+  for (let i = 0; i < keyText.length; i++) {
+    keyBytes[i] = keyText.charCodeAt(i);
+  }
+
+  return keyBytes.buffer;
+}
+
+async function encryptAsync(text, pem) {
   const encoder = new TextEncoder();
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(password),
-    'PBKDF2',
-    false,
-    ['deriveBits']
-  );
-  const rawKey = await crypto.subtle.deriveBits(
-    {
-      name: 'PBKDF2',
-      salt: new Uint8Array(),
-      iterations: 1,
-      hash: 'SHA-256'
-    },
-    keyMaterial,
-    256
-  );
-  const key = await crypto.subtle.importKey(
-    'raw',
-    rawKey,
-    'AES-GCM',
+
+  const spki = getPemKeyBytes(pem);
+
+  const rsaKey = await crypto.subtle.importKey(
+    'spki',
+    spki,
+    { name: 'RSA-OAEP', hash: 'SHA-256' },
     false,
     ['encrypt']
   );
 
+  const aesKey = await crypto.subtle.generateKey(
+    { name: 'AES-GCM', length: 256 },
+    true,
+    ['encrypt']
+  );
+
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+
   const encrypted = await crypto.subtle.encrypt(
     { name: 'AES-GCM', iv },
-    key,
+    aesKey,
     encoder.encode(text)
   );
 
-  const combined = new Uint8Array(iv.length + encrypted.byteLength);
-  combined.set(iv, 0);
-  combined.set(new Uint8Array(encrypted), iv.length);
+  const rawAesKey = await crypto.subtle.exportKey('raw', aesKey);
 
-  return btoa(String.fromCharCode(...combined));
+  const encryptedRawAesKey = await crypto.subtle.encrypt(
+    { name: 'RSA-OAEP' },
+    rsaKey,
+    rawAesKey
+  );
+
+  return {
+    key: encryptedRawAesKey,
+    iv: iv.buffer,
+    encrypted,
+  };
 }
 
 form.addEventListener('submit', async e => {
@@ -59,21 +76,24 @@ form.addEventListener('submit', async e => {
   loadingBanner.style.display = 'flex';
 
   try {
-    if (!password) {
-      passwordResponse = await fetch('/password');
+    if (!pem) {
+      const pemResponse = await fetch('/rsa-spki-pem');
 
-      if (!passwordResponse.ok) {
-        errorBox.textContent = 'Failed to fetch encryption password.';
+      if (!pemResponse.ok) {
+        errorBox.textContent = 'Failed to fetch public key for encrypting.';
         errorBox.style.display = 'flex';
-        console.error(response);
+        console.error(pemResponse);
         return;
       }
 
-      password = await passwordResponse.text();
+      pem = await pemResponse.text();
     }
 
-    const urlEncrypted = await encrypt(url, password);
-    const response = await fetch(`/browse?url=${encodeURIComponent(urlEncrypted)}`);
+    const encrypted = await encryptAsync(url, pem);
+    const encryptedUrl = encodeURIComponent(toBase64(encrypted.encrypted));
+    const key = encodeURIComponent(toBase64(encrypted.key));
+    const iv = encodeURIComponent(toBase64(encrypted.iv));
+    const response = await fetch(`/browse?url=${encryptedUrl}&key=${key}&iv=${iv}`);
     if (!response.ok) {
       errorBox.textContent = 'Failed to fetch content.';
       errorBox.style.display = 'flex';
