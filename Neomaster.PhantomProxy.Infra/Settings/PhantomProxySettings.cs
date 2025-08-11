@@ -19,9 +19,4 @@ public record PhantomProxySettings
   /// Names of attributes with URL values.
   /// </summary>
   public string[] UrlAttributeNames { get; init; } = [];
-
-  /// <summary>
-  /// Encryption password.
-  /// </summary>
-  public string EncryptionPassword { get; init; } = string.Empty;
 }
