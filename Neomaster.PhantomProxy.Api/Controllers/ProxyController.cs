@@ -1,4 +1,5 @@
 using System.Net.Mime;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Neomaster.PhantomProxy.App;
@@ -15,23 +16,29 @@ public class ProxyController(
   PhantomProxySettings settings)
   : ApiControllerBase
 {
+  private static readonly string _publicPem;
+  private static readonly string _privatePem;
   private static readonly string[] _fileMimeTypes;
   private static readonly string[] _textMimeTypes;
 
   static ProxyController()
   {
+    var rsa = RSA.Create(4096);
+    _publicPem = rsa.ExportSubjectPublicKeyInfoPem();
+    _privatePem = rsa.ExportPkcs8PrivateKeyPem();
+
     _textMimeTypes = GetConstValues(typeof(MediaTypeNames.Text));
     _fileMimeTypes = GetConstValues(typeof(MediaTypeNames.Font), typeof(MediaTypeNames.Image));
   }
 
   /// <summary>
-  /// Returns encryption password.
+  /// Returns RSA SPKI PEM.
   /// </summary>
-  /// <returns>Encryption password.</returns>
-  [HttpGet("/password")]
-  public string GetPassword()
+  /// <returns>RSA SPKI PEM.</returns>
+  [HttpGet("/rsa-spki-pem")]
+  public string GetRsaSpkiPem()
   {
-    return settings.EncryptionPassword;
+    return _publicPem;
   }
 
   /// <summary>
