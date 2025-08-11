@@ -41,15 +41,16 @@ public class ProxyService(
   }
 
   /// <inheritdoc/>
-  public string ProxyHtmlUrls(string htmlDoc, Uri baseUrl, string proxyUrlPrefix)
+  public string ProxyHtmlUrls(string htmlDoc, Uri baseUrl, string proxyUrlFormat, byte[] aesKey, byte[] aesIV)
   {
     ArgumentNullException.ThrowIfNull(baseUrl);
     ArgumentException.ThrowIfNullOrWhiteSpace(htmlDoc);
-    ArgumentException.ThrowIfNullOrWhiteSpace(proxyUrlPrefix);
+    ArgumentException.ThrowIfNullOrWhiteSpace(proxyUrlFormat);
 
     var doc = new HtmlDocument();
     doc.LoadHtml(htmlDoc);
 
+    var proxyUrlPrefix = proxyUrlFormat.Split('?', 2)[0];
     var ignoredUrlPrefixes = InfraConsts.IgnoredUrlPrefixes
       .Append(proxyUrlPrefix)
       .ToArray();
@@ -70,7 +71,7 @@ public class ProxyService(
         continue;
       }
 
-      attr.Value = ProxyUrl(attrValue, baseUrl, proxyUrlPrefix);
+      attr.Value = ProxyUrl(attrValue, baseUrl, proxyUrlFormat, aesKey, aesIV);
     }
 
     var allSrcSetValueItems = doc.GetAllSrcsetValueItems();
@@ -78,7 +79,7 @@ public class ProxyService(
     {
       vi.HtmlAttribute.Value = vi.HtmlAttribute.DeEntitizeValue.Replace(
         vi.Url,
-        ProxyUrl(vi.Url, baseUrl, proxyUrlPrefix));
+        ProxyUrl(vi.Url, baseUrl, proxyUrlFormat, aesKey, aesIV));
     }
 
     var rewrittenHtmlDoc = doc.DocumentNode.OuterHtml;
@@ -87,7 +88,7 @@ public class ProxyService(
   }
 
   /// <inheritdoc/>
-  public string ProxyUrl(string url, Uri baseUrl, string proxyUrlPrefix)
+  public string ProxyUrl(string url, Uri baseUrl, string proxyUrlFormat, byte[] aesKey, byte[] aesIV)
   {
     ArgumentException.ThrowIfNullOrWhiteSpace(url);
 
@@ -101,9 +102,9 @@ public class ProxyService(
       uri = new Uri(baseUrl, uri);
     }
 
-    var targetUrlBytes = AesGcmEncryptor.Encrypt(Encoding.UTF8.GetBytes(uri.AbsoluteUri), settings.EncryptionPassword);
+    var targetUrlBytes = AesGcmEncryptor.Encrypt(Encoding.UTF8.GetBytes(uri.AbsoluteUri), aesKey, aesIV);
     var targetUrl = Uri.EscapeDataString(Convert.ToBase64String(targetUrlBytes));
-    var proxiedUrl = $"{proxyUrlPrefix}{targetUrl}";
+    var proxiedUrl = string.Format(proxyUrlFormat, targetUrl);
 
     return proxiedUrl;
   }

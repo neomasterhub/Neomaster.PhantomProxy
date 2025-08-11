@@ -4,7 +4,6 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Neomaster.PhantomProxy.App;
 using Neomaster.PhantomProxy.Common;
-using Neomaster.PhantomProxy.Infra;
 
 namespace Neomaster.PhantomProxy.Api;
 
@@ -12,8 +11,7 @@ namespace Neomaster.PhantomProxy.Api;
 /// Controller for anonymously proxying requests.
 /// </summary>
 public class ProxyController(
-  IProxyService proxyService,
-  PhantomProxySettings settings)
+  IProxyService proxyService)
   : ApiControllerBase
 {
   private static readonly string _publicPem;
@@ -64,14 +62,14 @@ public class ProxyController(
 
     var request = new ProxyRequest { Url = url };
     var response = await proxyService.ProxyRequestHtmlContentAsync(request);
-    var proxyBaseUrl = $"{Request.Scheme}://{Request.Host}/browse?url=";
+    var proxyUrlFormat = $"{Request.Scheme}://{Request.Host}/browse?url={{0}}&key={Uri.EscapeDataString(key)}&iv={Uri.EscapeDataString(iv)}";
 
     var contentBytes = response.ContentBytes;
     var contentText = Encoding.UTF8.GetString(contentBytes);
 
     if (response.ContentType == MediaTypeNames.Text.Html)
     {
-      contentText = proxyService.ProxyHtmlUrls(contentText, new Uri(url), proxyBaseUrl);
+      contentText = proxyService.ProxyHtmlUrls(contentText, new Uri(url), proxyUrlFormat, aesKeyBytes, ivBytes);
     }
 
     if (_fileMimeTypes.Contains(response.ContentType))
