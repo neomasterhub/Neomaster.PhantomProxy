@@ -45,11 +45,21 @@ public class ProxyController(
   /// Returns content of given url base64.
   /// </summary>
   /// <param name="url">Base64-encoded encrypted target URL.</param>
+  /// <param name="key">Base64-encoded encrypted AES key.</param>
+  /// <param name="iv">Base64-encoded IV.</param>
   /// <returns>Content.</returns>
   [HttpGet("/browse")]
-  public async Task<IActionResult> BrowseAsync([FromQuery] string url)
+  public async Task<IActionResult> BrowseAsync(string url, string key, string iv)
   {
-    var urlDecryptedBytes = AesGcmEncryptor.Decrypt(Convert.FromBase64String(url), settings.EncryptionPassword);
+    var encryptedUrlBytes = Convert.FromBase64String(url);
+    var encryptedAesKeyBytes = Convert.FromBase64String(key);
+    var ivBytes = Convert.FromBase64String(iv);
+
+    using var rsa = RSA.Create();
+    rsa.ImportFromPem(_privatePem);
+    var aesKeyBytes = rsa.Decrypt(encryptedAesKeyBytes, RSAEncryptionPadding.OaepSHA256);
+
+    var urlDecryptedBytes = AesGcmEncryptor.Decrypt(encryptedUrlBytes, aesKeyBytes, ivBytes);
     url = Encoding.UTF8.GetString(urlDecryptedBytes);
 
     var request = new ProxyRequest { Url = url };
