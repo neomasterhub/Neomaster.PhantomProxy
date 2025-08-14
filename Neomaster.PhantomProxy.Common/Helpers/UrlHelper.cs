@@ -12,6 +12,13 @@ public static class UrlHelper
   /// <returns><see cref="Uri"/> if given string URL is valid, otherwise <c>null</c>.</returns>
   public static Uri? TryCreateUri(string url)
   {
+    if (string.IsNullOrWhiteSpace(url))
+    {
+      return null;
+    }
+
+    url = url.Trim();
+
     if (Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out var uri))
     {
       return uri;

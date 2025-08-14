@@ -1,0 +1,31 @@
+namespace Neomaster.PhantomProxy.Common.UnitTests;
+
+public class UrlHelperUnitTests
+{
+  [Theory]
+  [InlineData("https://example.com")]
+  [InlineData("https://example.com/")]
+  [InlineData(" https://example.com ")]
+  [InlineData("rel/path")]
+  [InlineData("rel/path/")]
+  [InlineData("/rel/path")]
+  [InlineData("/rel/path/")]
+  [InlineData(" rel/path ")]
+  public void TryCreateUri_ShouldReturnUri_ValidUrl(string url)
+  {
+    var uri = UrlHelper.TryCreateUri(url);
+
+    Assert.NotNull(uri);
+    Assert.Equal(url.Trim(), uri.OriginalString);
+  }
+
+  [Theory]
+  [InlineData("")]
+  [InlineData(" ")]
+  public void TryCreateUri_ShouldReturnNull_InvalidUrl(string url)
+  {
+    var uri = UrlHelper.TryCreateUri(url);
+
+    Assert.Null(uri);
+  }
+}
