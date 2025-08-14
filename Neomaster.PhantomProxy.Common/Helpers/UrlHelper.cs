@@ -26,4 +26,28 @@ public static class UrlHelper
 
     return null;
   }
+
+  /// <summary>
+  /// Converts given <see cref="Uri"/> to absolute.
+  /// </summary>
+  /// <param name="uri">URI to convert to absolute.</param>
+  /// <param name="baseUri">Absolute URI used to resolve relative URI.</param>
+  /// <returns>Absolute <see cref="Uri"/>.</returns>
+  public static Uri ToAbsolute(this Uri uri, Uri baseUri)
+  {
+    ArgumentNullException.ThrowIfNull(uri);
+    ArgumentNullException.ThrowIfNull(baseUri);
+
+    if (!baseUri.IsAbsoluteUri)
+    {
+      throw new ArgumentException("Base URI must be absolute.", nameof(baseUri));
+    }
+
+    if (uri.IsAbsoluteUri)
+    {
+      return uri;
+    }
+
+    return new Uri(baseUri, uri);
+  }
 }
