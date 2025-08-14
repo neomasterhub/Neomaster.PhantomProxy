@@ -7,13 +7,14 @@ Anonymous browser proxy inspired by [browser.lol](https://browser.lol).
 ### URL Proxying
 - [x] Proxy URLs in standard HTML attributes
 - [ ] Proxy URLs in standard SVG attributes
-- [ ] Proxy CSS URLs (inline styles and external files)
-- [x] Proxy `srcset` attribute URLs
+- [ ] Proxy URLs inside `url()` functions
+- [x] Proxy URLs inside `srcset` attribute
 
 ### Security
 - [x] Encrypt target URLs in Network tab
 - [x] Generate AES key client-side, encrypted with server RSA public key
 - [x] AES encryptor unit tests
+- [ ] Limit length of URLs
 
 ### Performance
 - [ ] Add performance measurement
