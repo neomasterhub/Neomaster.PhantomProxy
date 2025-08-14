@@ -32,23 +32,23 @@ public class UrlHelperUnitTests
   [Theory]
   [InlineData("https://a", "https://b", "https://a")]
   [InlineData("a", "https://b", "https://b/a")]
-  public void ToAbsolute_ShouldReturnAbsoluteUri(string url, string baseUrl, string expected)
+  public void ToAbsolute_ShouldReturnAbsoluteUri(string url, string baseUrl, string expectedUrl)
   {
-    var uri = UrlHelper.TryCreateUri(url);
-    var baseUri = UrlHelper.TryCreateUri(baseUrl);
+    var uri = UrlHelper.CreateUri(url);
+    var baseUri = UrlHelper.CreateUri(baseUrl);
 
-    var absoluteUri = uri!.ToAbsolute(baseUri!);
+    var absoluteUri = uri.ToAbsolute(baseUri);
 
     Assert.True(absoluteUri.IsAbsoluteUri);
-    Assert.Equal(expected, absoluteUri.OriginalString);
+    Assert.Equal(expectedUrl, absoluteUri.OriginalString);
   }
 
   [Fact]
   public void ToAbsolute_ShouldThrow_BaseUriIsNotAbsolute()
   {
-    var uri = UrlHelper.TryCreateUri("a");
-    var baseUri = UrlHelper.TryCreateUri("b");
+    var uri = UrlHelper.CreateUri("a");
+    var baseUri = UrlHelper.CreateUri("b");
 
-    Assert.Throws<ArgumentException>(() => uri!.ToAbsolute(baseUri!));
+    Assert.Throws<ArgumentException>(() => uri.ToAbsolute(baseUri));
   }
 }
