@@ -28,4 +28,27 @@ public class UrlHelperUnitTests
 
     Assert.Null(uri);
   }
+
+  [Theory]
+  [InlineData("https://a", "https://b", "https://a")]
+  [InlineData("a", "https://b", "https://b/a")]
+  public void ToAbsolute_ShouldReturnAbsoluteUri(string url, string baseUrl, string expected)
+  {
+    var uri = UrlHelper.TryCreateUri(url);
+    var baseUri = UrlHelper.TryCreateUri(baseUrl);
+
+    var absoluteUri = uri!.ToAbsolute(baseUri!);
+
+    Assert.True(absoluteUri.IsAbsoluteUri);
+    Assert.Equal(expected, absoluteUri.OriginalString);
+  }
+
+  [Fact]
+  public void ToAbsolute_ShouldThrow_BaseUriIsNotAbsolute()
+  {
+    var uri = UrlHelper.TryCreateUri("a");
+    var baseUri = UrlHelper.TryCreateUri("b");
+
+    Assert.Throws<ArgumentException>(() => uri!.ToAbsolute(baseUri!));
+  }
 }
