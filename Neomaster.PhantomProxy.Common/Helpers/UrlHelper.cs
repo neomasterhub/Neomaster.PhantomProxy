@@ -28,6 +28,19 @@ public static class UrlHelper
   }
 
   /// <summary>
+  /// Creates <see cref="Uri"/> from string URL.
+  /// </summary>
+  /// <param name="url">Absolute or relative string URL.</param>
+  /// <returns><see cref="Uri"/> from given string URL.</returns>
+  public static Uri CreateUri(string url)
+  {
+    var uri = TryCreateUri(url)
+      ?? throw new ArgumentException("Invalid URL format.", nameof(url));
+
+    return uri;
+  }
+
+  /// <summary>
   /// Converts given <see cref="Uri"/> to absolute.
   /// </summary>
   /// <param name="uri">URI to convert to absolute.</param>
