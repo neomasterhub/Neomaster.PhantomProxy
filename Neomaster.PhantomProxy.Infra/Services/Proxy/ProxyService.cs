@@ -41,9 +41,9 @@ public class ProxyService(
   }
 
   /// <inheritdoc/>
-  public string ProxyHtmlUrls(string htmlDoc, Uri baseUrl, string proxyUrlFormat, byte[] aesKey, byte[] aesIV)
+  public string ProxyHtmlUrls(string htmlDoc, Uri baseUri, string proxyUrlFormat, byte[] aesKey, byte[] aesIV)
   {
-    ArgumentNullException.ThrowIfNull(baseUrl);
+    ArgumentNullException.ThrowIfNull(baseUri);
     ArgumentException.ThrowIfNullOrWhiteSpace(htmlDoc);
     ArgumentException.ThrowIfNullOrWhiteSpace(proxyUrlFormat);
 
@@ -71,15 +71,15 @@ public class ProxyService(
         continue;
       }
 
-      attr.Value = ProxyUrl(attrValue, baseUrl, proxyUrlFormat, aesKey, aesIV);
+      attr.Value = ProxyUrl(attrValue, baseUri, proxyUrlFormat, aesKey, aesIV);
     }
 
-    var allSrcSetValueItems = doc.GetAllSrcsetValueItems();
-    foreach (var vi in allSrcSetValueItems)
+    var allSrcsetValueItems = doc.GetAllSrcsetValueItems();
+    foreach (var vi in allSrcsetValueItems)
     {
       vi.HtmlAttribute.Value = vi.HtmlAttribute.DeEntitizeValue.Replace(
         vi.Url,
-        ProxyUrl(vi.Url, baseUrl, proxyUrlFormat, aesKey, aesIV));
+        ProxyUrl(vi.Url, baseUri, proxyUrlFormat, aesKey, aesIV));
     }
 
     var rewrittenHtmlDoc = doc.DocumentNode.OuterHtml;
@@ -88,19 +88,21 @@ public class ProxyService(
   }
 
   /// <inheritdoc/>
-  public string ProxyUrl(string url, Uri baseUrl, string proxyUrlFormat, byte[] aesKey, byte[] aesIV)
+  public string ProxyUrl(string url, Uri baseUri, string proxyUrlFormat, byte[] aesKey, byte[] aesIV)
   {
     ArgumentException.ThrowIfNullOrWhiteSpace(url);
 
-    var uri = UrlHelper.TryCreateUri(url)?.ToAbsolute(baseUrl);
+    var uri = UrlHelper.TryCreateUri(url)?.ToAbsolute(baseUri);
     if (uri == null)
     {
       return url;
     }
 
-    var targetUrlBytes = AesGcmEncryptor.Encrypt(Encoding.UTF8.GetBytes(uri.AbsoluteUri), aesKey, aesIV);
-    var targetUrl = Uri.EscapeDataString(Convert.ToBase64String(targetUrlBytes));
-    var proxiedUrl = string.Format(proxyUrlFormat, targetUrl);
+    var urlBytes = Encoding.UTF8.GetBytes(uri.AbsoluteUri);
+    var urlBytesEncrypted = AesGcmEncryptor.Encrypt(urlBytes, aesKey, aesIV);
+    var urlBytesEncryptedBase64Escaped = Uri.EscapeDataString(Convert.ToBase64String(urlBytesEncrypted));
+
+    var proxiedUrl = string.Format(proxyUrlFormat, urlBytesEncryptedBase64Escaped);
 
     return proxiedUrl;
   }
