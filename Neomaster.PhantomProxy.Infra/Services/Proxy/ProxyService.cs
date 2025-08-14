@@ -92,14 +92,10 @@ public class ProxyService(
   {
     ArgumentException.ThrowIfNullOrWhiteSpace(url);
 
-    if (!Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out var uri))
+    var uri = UrlHelper.TryCreateUri(url)?.ToAbsolute(baseUrl);
+    if (uri == null)
     {
       return url;
-    }
-
-    if (!uri.IsAbsoluteUri)
-    {
-      uri = new Uri(baseUrl, uri);
     }
 
     var targetUrlBytes = AesGcmEncryptor.Encrypt(Encoding.UTF8.GetBytes(uri.AbsoluteUri), aesKey, aesIV);
