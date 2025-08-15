@@ -3,7 +3,7 @@ const form = document.getElementById('browse-form');
 const urlInput = document.getElementById('browse-url');
 const errorBox = document.getElementById('browse-error');
 const frame = document.getElementById('viewbox');
-let pem;
+let sessionInfo;
 
 function toBase64(bytes) {
   return btoa(String.fromCharCode(...new Uint8Array(bytes)));
@@ -19,6 +19,28 @@ function getPemKeyBytes(pem) {
   }
 
   return keyBytes.buffer;
+}
+
+async function startSessionAsync() {
+  loadingBanner.style.display = 'flex';
+
+  try {
+    const response = await fetch('/start-session');
+
+    if (!response.ok) {
+      throw new Error(`Failed to start session: ${response.status}`);
+    }
+
+    sessionInfo = await response.json();
+    console.log('New session started:', sessionInfo);
+  } catch (error) {
+    errorBox.textContent = 'Failed to start session.';
+    errorBox.style.display = 'flex';
+    console.error(error);
+  } finally {
+    loadingBanner.style.display = 'none';
+    setTimeout(() => location.reload(), sessionInfo.lifetimeMs);
+  }
 }
 
 async function encryptAsync(text, pem) {
@@ -63,6 +85,8 @@ async function encryptAsync(text, pem) {
   };
 }
 
+startSessionAsync();
+
 form.addEventListener('submit', async e => {
   e.preventDefault();
   errorBox.textContent = '';
@@ -76,25 +100,12 @@ form.addEventListener('submit', async e => {
   loadingBanner.style.display = 'flex';
 
   try {
-    if (!pem) {
-      const pemResponse = await fetch('/rsa-pem');
-
-      if (!pemResponse.ok) {
-        errorBox.textContent = 'Failed to fetch public key for encrypting.';
-        errorBox.style.display = 'flex';
-        console.error(pemResponse);
-        return;
-      }
-
-      pem = await pemResponse.text();
-    }
-
-    const encrypted = await encryptAsync(url, pem);
+    const encrypted = await encryptAsync(url, sessionInfo.pem);
     const encryptedUrl = encodeURIComponent(toBase64(encrypted.encrypted));
     const key = encodeURIComponent(toBase64(encrypted.key));
     const iv = encodeURIComponent(toBase64(encrypted.iv));
-    const pk = encodeURIComponent(pem);
-    const response = await fetch(`/browse?url=${encryptedUrl}&key=${key}&iv=${iv}&pem=${pk}`);
+    const pem = encodeURIComponent(sessionInfo.pem);
+    const response = await fetch(`/browse?url=${encryptedUrl}&key=${key}&iv=${iv}&pem=${pem}`);
     if (!response.ok) {
       errorBox.textContent = 'Failed to fetch content.';
       errorBox.style.display = 'flex';
