@@ -3,7 +3,6 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Neomaster.PhantomProxy.App;
-using Neomaster.PhantomProxy.Common;
 
 namespace Neomaster.PhantomProxy.Api;
 
@@ -11,7 +10,8 @@ namespace Neomaster.PhantomProxy.Api;
 /// Controller for anonymously proxying requests.
 /// </summary>
 public class ProxyController(
-  IProxyService proxyService)
+  IProxyService proxyService,
+  IUrlEncryptService urlEncryptService)
   : ApiControllerBase
 {
   private static readonly string _publicPem;
@@ -49,7 +49,6 @@ public class ProxyController(
   [HttpGet("/browse")]
   public async Task<IActionResult> BrowseAsync(string url, string key, string iv)
   {
-    var encryptedUrlBytes = Convert.FromBase64String(url);
     var encryptedAesKeyBytes = Convert.FromBase64String(key);
     var ivBytes = Convert.FromBase64String(iv);
 
@@ -57,18 +56,18 @@ public class ProxyController(
     rsa.ImportFromPem(_privatePem);
     var aesKeyBytes = rsa.Decrypt(encryptedAesKeyBytes, RSAEncryptionPadding.OaepSHA256);
 
-    var urlDecryptedBytes = AesGcmEncryptor.Decrypt(encryptedUrlBytes, aesKeyBytes, ivBytes);
-    url = Encoding.UTF8.GetString(urlDecryptedBytes);
-
-    var request = new ProxyRequest { Url = url };
-    var response = await proxyService.ProxyRequestHtmlContentAsync(request);
-
-    var proxyUrlFormat = $"{Request.Scheme}://{Request.Host}/browse?url={{0}}&key={Uri.EscapeDataString(key)}&iv={Uri.EscapeDataString(iv)}";
     var urlEncryptionOptions = new EncryptionOptions
     {
       AesKey = aesKeyBytes,
       AesIV = ivBytes,
     };
+
+    url = urlEncryptService.Decrypt(url, urlEncryptionOptions);
+
+    var request = new ProxyRequest { Url = url };
+    var response = await proxyService.ProxyRequestHtmlContentAsync(request);
+
+    var proxyUrlFormat = $"{Request.Scheme}://{Request.Host}/browse?url={{0}}&key={Uri.EscapeDataString(key)}&iv={Uri.EscapeDataString(iv)}";
 
     var contentBytes = response.ContentBytes;
     var contentText = Encoding.UTF8.GetString(contentBytes);

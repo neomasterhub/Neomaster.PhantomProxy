@@ -25,7 +25,8 @@ public class UrlAesEncryptService : IUrlEncryptService
 
     var urlBytes = Encoding.UTF8.GetBytes(url);
     var urlBytesEncrypted = AesGcmEncryptor.Encrypt(urlBytes, encryptionOptions.AesKey, encryptionOptions.AesIV);
-    var urlBytesEncryptedBase64Escaped = Uri.EscapeDataString(Convert.ToBase64String(urlBytesEncrypted));
+    var urlBytesEncryptedBase64 = Convert.ToBase64String(urlBytesEncrypted);
+    var urlBytesEncryptedBase64Escaped = Uri.EscapeDataString(urlBytesEncryptedBase64);
 
     return urlBytesEncryptedBase64Escaped;
   }
