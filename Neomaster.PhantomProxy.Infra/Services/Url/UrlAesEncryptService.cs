@@ -33,6 +33,23 @@ public class UrlAesEncryptService : IUrlEncryptService
   /// <inheritdoc/>
   public string Decrypt(string encryptedUrl, EncryptionOptions? encryptionOptions = null)
   {
-    throw new NotImplementedException();
+    ArgumentException.ThrowIfNullOrWhiteSpace(encryptedUrl);
+    ArgumentNullException.ThrowIfNull(encryptionOptions);
+
+    if (encryptionOptions.AesKey.Length == 0)
+    {
+      throw new ArgumentException("Encryption options must contain AES key.");
+    }
+
+    if (encryptionOptions.AesIV.Length == 0)
+    {
+      throw new ArgumentException("Encryption options must contain AES IV.");
+    }
+
+    var encryptedUrlBytes = Convert.FromBase64String(Uri.UnescapeDataString(encryptedUrl));
+    var urlBytes = AesGcmEncryptor.Decrypt(encryptedUrlBytes, encryptionOptions.AesKey, encryptionOptions.AesIV);
+    var url = Encoding.UTF8.GetString(urlBytes);
+
+    return url;
   }
 }
