@@ -77,7 +77,7 @@ form.addEventListener('submit', async e => {
 
   try {
     if (!pem) {
-      const pemResponse = await fetch('/rsa-spki-pem');
+      const pemResponse = await fetch('/rsa-pem');
 
       if (!pemResponse.ok) {
         errorBox.textContent = 'Failed to fetch public key for encrypting.';

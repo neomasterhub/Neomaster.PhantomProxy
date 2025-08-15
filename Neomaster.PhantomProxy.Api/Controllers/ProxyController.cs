@@ -30,11 +30,11 @@ public class ProxyController(
   }
 
   /// <summary>
-  /// Returns RSA SPKI PEM.
+  /// Returns RSA PEM-encoded public key.
   /// </summary>
-  /// <returns>RSA SPKI PEM.</returns>
-  [HttpGet("/rsa-spki-pem")]
-  public string GetRsaSpkiPem()
+  /// <returns>RSA PEM-encoded public key.</returns>
+  [HttpGet("/rsa-pem")]
+  public string GetRsaPem()
   {
     return _publicPem;
   }
