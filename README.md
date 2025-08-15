@@ -13,7 +13,10 @@ Anonymous browser proxy inspired by [browser.lol](https://browser.lol).
 ### Security
 - [x] Encrypt target URLs in Network tab
 - [x] Generate AES key client-side, encrypted with server RSA public key
+- [x] AES encryptor
 - [x] AES encryptor unit tests
+- [x] RSA encryptor
+- [x] RSA encryptor unit tests
 - [ ] Limit length of URLs
 
 ### Performance
