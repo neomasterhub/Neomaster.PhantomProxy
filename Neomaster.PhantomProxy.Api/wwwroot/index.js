@@ -93,7 +93,8 @@ form.addEventListener('submit', async e => {
     const encryptedUrl = encodeURIComponent(toBase64(encrypted.encrypted));
     const key = encodeURIComponent(toBase64(encrypted.key));
     const iv = encodeURIComponent(toBase64(encrypted.iv));
-    const response = await fetch(`/browse?url=${encryptedUrl}&key=${key}&iv=${iv}`);
+    const pk = encodeURIComponent(pem);
+    const response = await fetch(`/browse?url=${encryptedUrl}&key=${key}&iv=${iv}&pem=${pk}`);
     if (!response.ok) {
       errorBox.textContent = 'Failed to fetch content.';
       errorBox.style.display = 'flex';
