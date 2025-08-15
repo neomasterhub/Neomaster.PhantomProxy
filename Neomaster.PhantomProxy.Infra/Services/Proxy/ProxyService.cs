@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using Neomaster.PhantomProxy.App;
 using Neomaster.PhantomProxy.Common;
@@ -11,6 +12,10 @@ public class ProxyService(
   IUrlEncryptService urlEncryptService)
   : IProxyService
 {
+  private static readonly Regex _urlFunctionRegex = new(
+    CommonConsts.UrlFunctionRegexPattern,
+    RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
   private readonly HttpClient _httpClient = httpClientFactory.CreateClient(nameof(PhantomProxy));
 
   /// <inheritdoc/>
@@ -38,6 +43,32 @@ public class ProxyService(
     };
 
     return result;
+  }
+
+  /// <inheritdoc/>
+  public string ProxyUrlFunctionUrls(string text, Uri baseUri, string proxyUrlFormat, EncryptionOptions? encryptionOptions = null)
+  {
+    ArgumentNullException.ThrowIfNull(baseUri);
+    ArgumentException.ThrowIfNullOrWhiteSpace(text);
+    ArgumentException.ThrowIfNullOrWhiteSpace(proxyUrlFormat);
+
+    var proxiedText = _urlFunctionRegex.Replace(text, match =>
+    {
+      var url = match.Groups["url"].Value.Trim();
+
+      if (string.IsNullOrWhiteSpace(url))
+      {
+        return match.Value;
+      }
+
+      var quote = match.Groups[1].Success ? match.Groups[1].Value : string.Empty;
+      var proxiedUrl = ProxyUrl(url, baseUri, proxyUrlFormat, encryptionOptions);
+      var proxiedUrlFunction = $"url({quote}{proxiedUrl}{quote})";
+
+      return proxiedUrlFunction;
+    });
+
+    return proxiedText;
   }
 
   /// <inheritdoc/>

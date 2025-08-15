@@ -6,20 +6,30 @@ namespace Neomaster.PhantomProxy.App;
 public interface IProxyService
 {
   /// <summary>
-  /// Proxies the given request and returns content.
+  /// Proxies given request and returns content.
   /// </summary>
-  /// <param name="request">Proxy request with the target URL.</param>
+  /// <param name="request">Proxy request with target URL.</param>
   /// <returns>Proxy response.</returns>
   Task<ProxyResponse> ProxyRequestHtmlContentAsync(ProxyRequest request);
 
   /// <summary>
-  /// Rewrites links in HTML document to proxy URLs.
+  /// Rewrites URLs inside <c>url()</c> functions to proxy URLs.
   /// </summary>
-  /// <param name="htmlDoc">HTML document.</param>
-  /// <param name="baseUri">Base URI for resolving relative links.</param>
+  /// <param name="text">Text with <c>url()</c> functions.</param>
+  /// <param name="baseUri">Base URI for resolving relative URLs.</param>
   /// <param name="proxyUrlFormat">Proxy URL format string.</param>
   /// <param name="encryptionOptions">Encryption options (e.g. keys, IV).</param>
-  /// <returns>Rewritten HTML document with proxied links.</returns>
+  /// <returns>Rewritten text with proxied URLs inside <c>url()</c> functions.</returns>
+  string ProxyUrlFunctionUrls(string text, Uri baseUri, string proxyUrlFormat, EncryptionOptions? encryptionOptions = null);
+
+  /// <summary>
+  /// Rewrites URLs in HTML document to proxy URLs.
+  /// </summary>
+  /// <param name="htmlDoc">HTML document.</param>
+  /// <param name="baseUri">Base URI for resolving relative URLs.</param>
+  /// <param name="proxyUrlFormat">Proxy URL format string.</param>
+  /// <param name="encryptionOptions">Encryption options (e.g. keys, IV).</param>
+  /// <returns>Rewritten HTML document with proxied URLs.</returns>
   string ProxyHtmlUrls(string htmlDoc, Uri baseUri, string proxyUrlFormat, EncryptionOptions? encryptionOptions = null);
 
   /// <summary>

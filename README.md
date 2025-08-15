@@ -7,7 +7,7 @@ Anonymous browser proxy inspired by [browser.lol](https://browser.lol).
 ### URL Proxying
 - [x] Proxy URLs in standard HTML attributes
 - [ ] Proxy URLs in standard SVG attributes
-- [ ] Proxy URLs inside `url()` functions
+- [x] Proxy URLs inside `url()` functions
 - [x] Proxy URLs inside `srcset` attribute
 
 ### Security

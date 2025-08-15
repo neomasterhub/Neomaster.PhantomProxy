@@ -72,14 +72,17 @@ public class ProxyController(
     var contentText = Encoding.UTF8.GetString(contentBytes);
 
     // Create proxy URL format string.
-    key = Uri.EscapeDataString(key);
     iv = Uri.EscapeDataString(iv);
+    key = Uri.EscapeDataString(key);
     pem = Uri.EscapeDataString(pem);
     var proxyUrlFormat = $"{Request.Scheme}://{Request.Host}/browse?url={{0}}&key={key}&iv={iv}&pem={pem}";
+    var baseUri = new Uri(url);
+
+    contentText = proxyService.ProxyUrlFunctionUrls(contentText, baseUri, proxyUrlFormat, urlEncryptionOptions);
 
     if (response.ContentType == MediaTypeNames.Text.Html)
     {
-      contentText = proxyService.ProxyHtmlUrls(contentText, new Uri(url), proxyUrlFormat, urlEncryptionOptions);
+      contentText = proxyService.ProxyHtmlUrls(contentText, baseUri, proxyUrlFormat, urlEncryptionOptions);
     }
 
     if (_fileMimeTypes.Contains(response.ContentType))
