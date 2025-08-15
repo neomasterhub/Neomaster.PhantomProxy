@@ -62,14 +62,20 @@ public class ProxyController(
 
     var request = new ProxyRequest { Url = url };
     var response = await proxyService.ProxyRequestHtmlContentAsync(request);
+
     var proxyUrlFormat = $"{Request.Scheme}://{Request.Host}/browse?url={{0}}&key={Uri.EscapeDataString(key)}&iv={Uri.EscapeDataString(iv)}";
+    var urlEncryptionOptions = new EncryptionOptions
+    {
+      AesKey = aesKeyBytes,
+      AesIV = ivBytes,
+    };
 
     var contentBytes = response.ContentBytes;
     var contentText = Encoding.UTF8.GetString(contentBytes);
 
     if (response.ContentType == MediaTypeNames.Text.Html)
     {
-      contentText = proxyService.ProxyHtmlUrls(contentText, new Uri(url), proxyUrlFormat, aesKeyBytes, ivBytes);
+      contentText = proxyService.ProxyHtmlUrls(contentText, new Uri(url), proxyUrlFormat, urlEncryptionOptions);
     }
 
     if (_fileMimeTypes.Contains(response.ContentType))

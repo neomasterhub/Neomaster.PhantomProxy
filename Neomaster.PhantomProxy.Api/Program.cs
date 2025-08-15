@@ -1,5 +1,6 @@
 using System.Reflection;
 using Microsoft.AspNetCore.HttpOverrides;
+using Neomaster.PhantomProxy.App;
 using Neomaster.PhantomProxy.Infra;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +12,11 @@ builder.Services.AddSwaggerGen(options =>
   var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
   options.IncludeXmlComments(xmlPath);
 });
+
+// Phantom Proxy configuration
 builder.Services.AddPhantomProxy(builder.Configuration);
+builder.Services.AddScoped<IProxyService, ProxyService>();
+builder.Services.AddScoped<IUrlEncryptService, UrlAesEncryptService>();
 
 var app = builder.Build();
 app.Use(async (context, next) =>

@@ -18,10 +18,9 @@ public interface IProxyService
   /// <param name="htmlDoc">HTML document.</param>
   /// <param name="baseUri">Base URI for resolving relative links.</param>
   /// <param name="proxyUrlFormat">Proxy URL format string.</param>
-  /// <param name="aesKey">AES key.</param>
-  /// <param name="aesIV">AES IV.</param>
+  /// <param name="encryptionOptions">Encryption options (e.g. keys, IV).</param>
   /// <returns>Rewritten HTML document with proxied links.</returns>
-  string ProxyHtmlUrls(string htmlDoc, Uri baseUri, string proxyUrlFormat, byte[] aesKey, byte[] aesIV);
+  string ProxyHtmlUrls(string htmlDoc, Uri baseUri, string proxyUrlFormat, EncryptionOptions? encryptionOptions = null);
 
   /// <summary>
   /// Returns proxied URL or original if invalid.
@@ -29,8 +28,7 @@ public interface IProxyService
   /// <param name="url">URL to proxy.</param>
   /// <param name="baseUri">Base URI for resolving relative links.</param>
   /// <param name="proxyUrlFormat">Proxy URL format string.</param>
-  /// <param name="aesKey">AES key.</param>
-  /// <param name="aesIV">AES IV.</param>
+  /// <param name="encryptionOptions">Encryption options (e.g. keys, IV).</param>
   /// <returns>Proxied URL or original if invalid.</returns>
-  public string ProxyUrl(string url, Uri baseUri, string proxyUrlFormat, byte[] aesKey, byte[] aesIV);
+  public string ProxyUrl(string url, Uri baseUri, string proxyUrlFormat, EncryptionOptions? encryptionOptions = null);
 }

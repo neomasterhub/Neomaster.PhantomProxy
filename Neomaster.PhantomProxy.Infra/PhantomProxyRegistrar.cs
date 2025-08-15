@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Neomaster.PhantomProxy.App;
 
 namespace Neomaster.PhantomProxy.Infra;
 
@@ -21,7 +20,7 @@ public static class PhantomProxyRegistrar
     ArgumentNullException.ThrowIfNull(settings, nameof(settings));
 
     services.AddSingleton(settings);
-    services.AddScoped<IProxyService, ProxyService>();
+
     services.AddHttpClient(nameof(PhantomProxy), client =>
     {
       client.DefaultRequestHeaders.UserAgent.ParseAdd(settings.UserAgent);
