@@ -19,4 +19,9 @@ public record PhantomProxySettings
   /// Names of attributes with URL values.
   /// </summary>
   public string[] UrlAttributeNames { get; init; } = [];
+
+  /// <summary>
+  /// Lifetime of encryption keys.
+  /// </summary>
+  public TimeSpan EncryptionKeysLifetime { get; init; }
 }

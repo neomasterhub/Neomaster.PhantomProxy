@@ -1,8 +1,8 @@
 using System.Net.Mime;
-using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Neomaster.PhantomProxy.App;
+using Neomaster.PhantomProxy.Common;
 
 namespace Neomaster.PhantomProxy.Api;
 
@@ -10,33 +10,31 @@ namespace Neomaster.PhantomProxy.Api;
 /// Controller for anonymously proxying requests.
 /// </summary>
 public class ProxyController(
+  ICacheService cacheService,
   IProxyService proxyService,
+  ISessionService sessionService,
   IUrlEncryptService urlEncryptService)
   : ApiControllerBase
 {
-  private static readonly string _publicPem;
-  private static readonly string _privatePem;
   private static readonly string[] _fileMimeTypes;
   private static readonly string[] _textMimeTypes;
 
   static ProxyController()
   {
-    var rsa = RSA.Create(4096);
-    _publicPem = rsa.ExportSubjectPublicKeyInfoPem();
-    _privatePem = rsa.ExportPkcs8PrivateKeyPem();
-
     _textMimeTypes = GetConstValues(typeof(MediaTypeNames.Text));
     _fileMimeTypes = GetConstValues(typeof(MediaTypeNames.Font), typeof(MediaTypeNames.Image));
   }
 
   /// <summary>
-  /// Returns RSA PEM-encoded public key.
+  /// Starts new session and returns session information.
   /// </summary>
-  /// <returns>RSA PEM-encoded public key.</returns>
-  [HttpGet("/rsa-pem")]
-  public string GetRsaPem()
+  /// <returns>Session information.</returns>
+  [HttpGet("/start-session")]
+  public SessionInfo StartSession()
   {
-    return _publicPem;
+    var sessionInfo = sessionService.Start();
+
+    return sessionInfo;
   }
 
   /// <summary>
@@ -45,32 +43,39 @@ public class ProxyController(
   /// <param name="url">Base64-encoded encrypted target URL.</param>
   /// <param name="key">Base64-encoded encrypted AES key.</param>
   /// <param name="iv">Base64-encoded IV.</param>
+  /// <param name="pem">RSA PEM-encoded key.</param>
   /// <returns>Content.</returns>
   [HttpGet("/browse")]
-  public async Task<IActionResult> BrowseAsync(string url, string key, string iv)
+  public async Task<IActionResult> BrowseAsync(string url, string key, string iv, string pem)
   {
     var encryptedAesKeyBytes = Convert.FromBase64String(key);
     var ivBytes = Convert.FromBase64String(iv);
 
-    using var rsa = RSA.Create();
-    rsa.ImportFromPem(_privatePem);
-    var aesKeyBytes = rsa.Decrypt(encryptedAesKeyBytes, RSAEncryptionPadding.OaepSHA256);
+    // Decrypt AES key.
+    var rsaPems = cacheService.RestoreRsaPems(pem);
+    var aesKeyBytes = RsaEncryptor.Decrypt(encryptedAesKeyBytes, rsaPems.PrivatePem);
 
+    // Decrypt URL.
     var urlEncryptionOptions = new EncryptionOptions
     {
       AesKey = aesKeyBytes,
       AesIV = ivBytes,
     };
-
     url = urlEncryptService.Decrypt(url, urlEncryptionOptions);
 
+    // Request content.
     var request = new ProxyRequest { Url = url };
     var response = await proxyService.ProxyRequestHtmlContentAsync(request);
 
-    var proxyUrlFormat = $"{Request.Scheme}://{Request.Host}/browse?url={{0}}&key={Uri.EscapeDataString(key)}&iv={Uri.EscapeDataString(iv)}";
-
+    // Prepare content for handling.
     var contentBytes = response.ContentBytes;
     var contentText = Encoding.UTF8.GetString(contentBytes);
+
+    // Create proxy URL format string.
+    key = Uri.EscapeDataString(key);
+    iv = Uri.EscapeDataString(iv);
+    pem = Uri.EscapeDataString(pem);
+    var proxyUrlFormat = $"{Request.Scheme}://{Request.Host}/browse?url={{0}}&key={key}&iv={iv}&pem={pem}";
 
     if (response.ContentType == MediaTypeNames.Text.Html)
     {

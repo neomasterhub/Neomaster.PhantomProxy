@@ -15,8 +15,11 @@ builder.Services.AddSwaggerGen(options =>
 
 // Phantom Proxy configuration
 builder.Services.AddPhantomProxy(builder.Configuration);
+builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Services.AddScoped<IProxyService, ProxyService>();
+builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<IUrlEncryptService, UrlAesEncryptService>();
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 app.Use(async (context, next) =>
