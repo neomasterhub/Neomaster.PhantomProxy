@@ -17,6 +17,7 @@ Anonymous browser proxy inspired by [browser.lol](https://browser.lol).
 - [x] AES encryptor unit tests
 - [x] RSA encryptor
 - [x] RSA encryptor unit tests
+- [x] Implement temporary RSA keys for sessions with automatic generation and periodic refresh
 - [ ] Limit length of URLs
 
 ### Performance
