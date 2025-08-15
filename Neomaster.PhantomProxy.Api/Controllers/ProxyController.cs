@@ -12,6 +12,7 @@ namespace Neomaster.PhantomProxy.Api;
 public class ProxyController(
   ICacheService cacheService,
   IProxyService proxyService,
+  ISessionService sessionService,
   IUrlEncryptService urlEncryptService)
   : ApiControllerBase
 {
@@ -25,15 +26,15 @@ public class ProxyController(
   }
 
   /// <summary>
-  /// Returns RSA PEM-encoded public key.
+  /// Starts new session and returns session information.
   /// </summary>
-  /// <returns>RSA PEM-encoded public key.</returns>
-  [HttpGet("/rsa-pem")]
-  public string GetRsaPem()
+  /// <returns>Session information.</returns>
+  [HttpGet("/start-session")]
+  public SessionInfo StartSession()
   {
-    var rsaPems = cacheService.RestoreRsaPems();
+    var sessionInfo = sessionService.Start();
 
-    return rsaPems.PublicPem;
+    return sessionInfo;
   }
 
   /// <summary>
