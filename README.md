@@ -21,7 +21,7 @@ Anonymous browser proxy inspired by [browser.lol](https://browser.lol).
 - [ ] Implement secure session keys handling
 - [ ] Limit length of URLs
 
-## Content
+### Content
 - [ ] Handle content with charset
 - [ ] Optionally remove `<script>` tags
 
