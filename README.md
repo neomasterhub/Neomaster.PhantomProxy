@@ -2,7 +2,7 @@
 
 Anonymous browser proxy inspired by [browser.lol](https://browser.lol).
 
-## 📅 Roadmap
+## 📅 MVP Roadmap
 
 ### URL Proxying
 - [x] Proxy URLs in standard HTML attributes
@@ -18,14 +18,17 @@ Anonymous browser proxy inspired by [browser.lol](https://browser.lol).
 - [x] RSA encryptor
 - [x] RSA encryptor unit tests
 - [x] Implement temporary RSA keys for sessions with automatic generation and periodic refresh
+- [ ] Implement secure session keys handling
 - [ ] Limit length of URLs
+
+## Content
+- [ ] Handle content with charset
+- [ ] Optionally remove `<script>` tags
 
 ### Performance
 - [ ] Add performance measurement
 - [ ] Cache proxied resources
 
-### Other
-- [ ] Add infrastructure-level unit tests
-- [ ] Write deployment instruction
-- [ ] Publish NuGet package
-- [ ] Optionally remove `<script>` tags
+### Documentation
+- [ ] Create deployment instruction
+- [ ] Create user-friendly explanation of application workflow
