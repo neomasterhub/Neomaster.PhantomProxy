@@ -42,13 +42,14 @@ public class SessionServiceUnitTests
   [Fact]
   public void Start_ShouldReturnSessionInfo()
   {
+    var sessionIdGuid = Guid.Empty;
     var pems = new RsaPems
     {
       PublicPem = "1",
       PrivatePem = "2",
     };
     _mockCacheService
-      .Setup(m => m.RestoreRsaPems(null, null))
+      .Setup(m => m.RestoreRsaPems(It.Is<string?>(key => Guid.TryParse(key, out sessionIdGuid)), null))
       .Returns(pems);
 
     var sessionInfo = _sut.Start();
@@ -56,6 +57,7 @@ public class SessionServiceUnitTests
     Assert.NotNull(sessionInfo);
     Assert.Equal(pems.PublicPem, sessionInfo.Pem);
     Assert.Equal(_phantomProxySettings.EncryptionKeysLifetime, sessionInfo.Lifetime);
-    _mockCacheService.Verify(v => v.RestoreRsaPems(null, null), Times.Once());
+    Assert.Equal(sessionIdGuid.ToString(), sessionInfo.Id);
+    _mockCacheService.Verify(v => v.RestoreRsaPems(It.Is<string?>(key => Guid.TryParse(key, out sessionIdGuid)), null), Times.Once());
   }
 }
