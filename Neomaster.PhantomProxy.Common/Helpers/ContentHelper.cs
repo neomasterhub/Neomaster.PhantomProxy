@@ -1,3 +1,5 @@
+using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Text;
 
 namespace Neomaster.PhantomProxy.Common;
@@ -12,6 +14,29 @@ public static class ContentHelper
   public static readonly byte[] Utf16BeBom = [0xFE, 0xFF];
   public static readonly byte[] Utf32LeBom = [0xFF, 0xFE, 0x00, 0x00];
   public static readonly byte[] Utf32BeBom = [0x00, 0x00, 0xFE, 0xFF];
+
+  /// <summary>
+  /// Returns content information from Content-Type header value.
+  /// </summary>
+  /// <param name="contentType">Content-Type header value.</param>
+  /// <returns>Content information.</returns>
+  public static ContentInfo GetContentInfo(string contentType)
+  {
+    if (MediaTypeHeaderValue.TryParse(contentType, out var mt))
+    {
+      return new ContentInfo
+      {
+        Charset = mt.CharSet ?? Encoding.UTF8.WebName,
+        MediaType = mt.MediaType ?? MediaTypeNames.Application.Octet,
+      };
+    }
+
+    return new ContentInfo
+    {
+      Charset = Encoding.UTF8.WebName,
+      MediaType = MediaTypeNames.Application.Octet,
+    };
+  }
 
   /// <summary>
   /// Returns encoding from BOM or null.
