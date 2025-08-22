@@ -1,5 +1,4 @@
 using System.Net.Mime;
-using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Neomaster.PhantomProxy.App;
 using Neomaster.PhantomProxy.Common;
@@ -75,32 +74,25 @@ public class ProxyController(
     var request = new ProxyRequest { Url = url };
     var response = await proxyService.ProxyRequestHtmlContentAsync(request);
 
-    // Prepare content for handling.
-    var contentBytes = response.ContentBytes;
-    var contentText = Encoding.UTF8.GetString(contentBytes);
-
     // Create proxy URL format string.
     var proxyUrlFormat = $"{Request.Scheme}://{Request.Host}/browse?url={{0}}";
     var baseUri = new Uri(url);
 
-    contentText = proxyService.ProxyUrlFunctionUrls(contentText, baseUri, proxyUrlFormat, urlEncryptionOptions);
+    // Prepare content for handling.
+    var content = ContentHelper.PrepareContent(response.ContentBytes, response.ContentType);
 
-    if (response.ContentType == MediaTypeNames.Text.Html)
+    if (response.ContentType.StartsWith("text/", StringComparison.OrdinalIgnoreCase))
     {
-      contentText = proxyService.ProxyHtmlUrls(contentText, baseUri, proxyUrlFormat, urlEncryptionOptions);
+      var proxiedContentText = proxyService.ProxyUrlFunctionUrls(content.Text, baseUri, proxyUrlFormat, urlEncryptionOptions);
+      if (response.ContentType == MediaTypeNames.Text.Html)
+      {
+        proxiedContentText = proxyService.ProxyHtmlUrls(proxiedContentText, baseUri, proxyUrlFormat, urlEncryptionOptions);
+      }
+
+      return Content(proxiedContentText, content.ContentTypeHeader);
     }
 
-    if (_fileMimeTypes.Contains(response.ContentType))
-    {
-      return File(contentBytes, response.ContentType);
-    }
-
-    if (_textMimeTypes.Contains(response.ContentType))
-    {
-      return Content(contentText, response.ContentType);
-    }
-
-    return StatusCode(StatusCodes.Status415UnsupportedMediaType, $"Unsupported content type: {response.ContentType}.");
+    return File(content.RawBytes, content.Info.MediaType);
   }
 
   private static string[] GetConstValues(params Type[] types)
