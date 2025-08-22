@@ -16,6 +16,26 @@ public static class ContentHelper
   public static readonly byte[] Utf32BeBom = [0x00, 0x00, 0xFE, 0xFF];
 
   /// <summary>
+  /// Returns content data from HTTP response, prepared for business logic.
+  /// </summary>
+  /// <param name="rawBytes">HTTP response content bytes.</param>
+  /// <param name="contentType">Content-Type header value.</param>
+  /// <returns>Content data ready for business logic handling.</returns>
+  public static Content PrepareContent(byte[] rawBytes, string contentType)
+  {
+    var contentInfo = GetContentInfo(contentType);
+    var encoding = TryGetBomEncoding(rawBytes) ?? Encoding.GetEncoding(contentInfo.Charset);
+    var result = new Content
+    {
+      ContentBytes = rawBytes,
+      ContentEncoding = encoding,
+      ContentInfo = contentInfo,
+    };
+
+    return result;
+  }
+
+  /// <summary>
   /// Returns content information from Content-Type header value.
   /// </summary>
   /// <param name="contentType">Content-Type header value.</param>
