@@ -24,12 +24,14 @@ public static class ContentHelper
   public static Content PrepareContent(byte[] rawBytes, string contentType)
   {
     var contentInfo = GetContentInfo(contentType);
-    var encoding = TryGetBomEncoding(rawBytes) ?? Encoding.GetEncoding(contentInfo.Charset);
+    var encodingWithBom = TryGetBomEncoding(rawBytes);
+    var encoding = encodingWithBom ?? Encoding.GetEncoding(contentInfo.Charset);
     var result = new Content
     {
-      ContentBytes = rawBytes,
-      ContentEncoding = encoding,
-      ContentInfo = contentInfo,
+      RawBytes = rawBytes,
+      WithBom = encodingWithBom != null,
+      Encoding = encoding,
+      Info = contentInfo,
     };
 
     return result;

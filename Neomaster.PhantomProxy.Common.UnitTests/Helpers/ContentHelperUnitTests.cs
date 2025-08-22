@@ -64,4 +64,42 @@ public class ContentHelperUnitTests
     Assert.Equal(Encoding.UTF8.WebName, contentInfo.Charset);
     Assert.Equal(MediaTypeNames.Application.Octet, contentInfo.MediaType);
   }
+
+  [Fact]
+  public void PrepareContent_ShouldReturnContent()
+  {
+    var aByte = (byte)'a';
+    var testCases = new (
+      string ContentType,
+      byte[] ContentBytes,
+      bool ContentWithBom,
+      Encoding ExpectedEncoding)[]
+    {
+      ("A", new byte[] { aByte },
+      false, Encoding.UTF8),
+
+      ("text/plain", new byte[] { aByte },
+      false, Encoding.UTF8),
+
+      ("text/plain; A", new byte[] { aByte },
+      false, Encoding.UTF8),
+
+      ("text/plain", ContentHelper.Utf16LeBom.Concat(new byte[] { aByte, 0x00 }).ToArray(),
+      true, Encoding.Unicode),
+    };
+
+    foreach (var (contentType, contentBytes, contentWithBom, expectedEncoding) in testCases)
+    {
+      var expectedContentInfo = ContentHelper.GetContentInfo(contentType);
+
+      var content = ContentHelper.PrepareContent(contentBytes, contentType);
+
+      Assert.Equal(contentBytes, content.RawBytes);
+      Assert.Equal(contentWithBom, content.WithBom);
+      Assert.Equal(expectedContentInfo, content.Info);
+      Assert.Equal(expectedEncoding.WebName, content.Encoding.WebName);
+      Assert.Equal("a", content.Text.TrimStart('\uFEFF'));
+      Assert.Equal($"{expectedContentInfo.MediaType}; {content.Encoding.WebName}", content.ContentTypeHeader);
+    }
+  }
 }

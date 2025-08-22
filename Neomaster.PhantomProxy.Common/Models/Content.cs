@@ -10,25 +10,30 @@ public record Content
   /// <summary>
   /// Raw content bytes.
   /// </summary>
-  public byte[] ContentBytes { get; init; } = [];
+  public byte[] RawBytes { get; init; } = [];
+
+  /// <summary>
+  /// Raw content bytes with BOM.
+  /// </summary>
+  public bool WithBom { get; init; }
 
   /// <summary>
   /// Content information from HTTP response.
   /// </summary>
-  public ContentInfo ContentInfo { get; init; } = new();
+  public ContentInfo Info { get; init; } = new();
 
   /// <summary>
   /// Detected content encoding.
   /// </summary>
-  public Encoding ContentEncoding { get; init; } = Encoding.UTF8;
+  public Encoding Encoding { get; init; } = Encoding.UTF8;
 
   /// <summary>
   /// Content text in detected encoding.
   /// </summary>
-  public string ContentText => ContentEncoding.GetString(ContentBytes);
+  public string Text => Encoding.GetString(RawBytes);
 
   /// <summary>
   /// Content-Type header value with detected media type and charset.
   /// </summary>
-  public string ContentType => $"{ContentInfo.MediaType}; {ContentInfo.Charset}";
+  public string ContentTypeHeader => $"{Info.MediaType}; {Encoding.WebName}";
 }
