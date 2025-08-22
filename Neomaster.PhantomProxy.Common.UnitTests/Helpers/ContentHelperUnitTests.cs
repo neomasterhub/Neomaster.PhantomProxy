@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using System.Text;
 
 namespace Neomaster.PhantomProxy.Common.UnitTests;
@@ -37,5 +38,30 @@ public class ContentHelperUnitTests
     var actualEncoding = ContentHelper.TryGetBomEncoding("a"u8);
 
     Assert.Null(actualEncoding);
+  }
+
+  [Theory]
+  [InlineData("application/json")]
+  [InlineData("application/json; A")]
+  [InlineData("application/json; charset=utf-8")]
+  public void GetContentInfo_ShouldReturnContentInfoParsed_ValidContentType(string contentType)
+  {
+    var contentInfo = ContentHelper.GetContentInfo(contentType);
+
+    Assert.Equal(Encoding.UTF8.WebName, contentInfo.Charset);
+    Assert.Equal(MediaTypeNames.Application.Json, contentInfo.MediaType);
+  }
+
+  [Theory]
+  [InlineData("")]
+  [InlineData("A; B")]
+  [InlineData("A; charset=utf-32")]
+  [InlineData("application/json;")]
+  public void GetContentInfo_ShouldReturnContentInfoDefault_InvalidContentType(string contentType)
+  {
+    var contentInfo = ContentHelper.GetContentInfo(contentType);
+
+    Assert.Equal(Encoding.UTF8.WebName, contentInfo.Charset);
+    Assert.Equal(MediaTypeNames.Application.Octet, contentInfo.MediaType);
   }
 }
