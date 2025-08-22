@@ -6,6 +6,11 @@ namespace Neomaster.PhantomProxy.App;
 public record SessionInfo
 {
   /// <summary>
+  /// Session ID.
+  /// </summary>
+  public string Id { get; init; } = string.Empty;
+
+  /// <summary>
   /// Public PEM-encoded key.
   /// </summary>
   public string Pem { get; init; } = string.Empty;

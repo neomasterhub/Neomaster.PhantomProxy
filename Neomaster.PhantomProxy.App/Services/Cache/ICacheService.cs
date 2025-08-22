@@ -13,5 +13,5 @@ public interface ICacheService
   /// <param name="key">Cache key.</param>
   /// <param name="duration">Cache duration.</param>
   /// <returns>RSA PEM-encoded keys.</returns>
-  RsaPems RestoreRsaPems(string? key = null, TimeSpan? duration = null);
+  RsaPems RestoreRsaPems(string key, TimeSpan? duration = null);
 }

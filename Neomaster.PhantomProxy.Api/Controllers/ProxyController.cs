@@ -46,13 +46,21 @@ public class ProxyController(
   /// <param name="pem">RSA PEM-encoded key.</param>
   /// <returns>Content.</returns>
   [HttpGet("/browse")]
-  public async Task<IActionResult> BrowseAsync(string url, string key, string iv, string pem)
+  public async Task<IActionResult> BrowseAsync(string url)
   {
+    Request.Cookies.TryGetValue("key", out var key);
+    Request.Cookies.TryGetValue("iv", out var iv);
+    Request.Cookies.TryGetValue("session-id", out var sessionId);
+
+    ArgumentException.ThrowIfNullOrWhiteSpace(key);
+    ArgumentException.ThrowIfNullOrWhiteSpace(iv);
+    ArgumentException.ThrowIfNullOrWhiteSpace(sessionId);
+
     var encryptedAesKeyBytes = Convert.FromBase64String(key);
     var ivBytes = Convert.FromBase64String(iv);
 
     // Decrypt AES key.
-    var rsaPems = cacheService.RestoreRsaPems(pem);
+    var rsaPems = cacheService.RestoreRsaPems(sessionId);
     var aesKeyBytes = RsaEncryptor.Decrypt(encryptedAesKeyBytes, rsaPems.PrivatePem);
 
     // Decrypt URL.
@@ -72,10 +80,7 @@ public class ProxyController(
     var contentText = Encoding.UTF8.GetString(contentBytes);
 
     // Create proxy URL format string.
-    iv = Uri.EscapeDataString(iv);
-    key = Uri.EscapeDataString(key);
-    pem = Uri.EscapeDataString(pem);
-    var proxyUrlFormat = $"{Request.Scheme}://{Request.Host}/browse?url={{0}}&key={key}&iv={iv}&pem={pem}";
+    var proxyUrlFormat = $"{Request.Scheme}://{Request.Host}/browse?url={{0}}";
     var baseUri = new Uri(url);
 
     contentText = proxyService.ProxyUrlFunctionUrls(contentText, baseUri, proxyUrlFormat, urlEncryptionOptions);

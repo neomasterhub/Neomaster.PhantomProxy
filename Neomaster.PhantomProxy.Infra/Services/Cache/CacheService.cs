@@ -11,17 +11,18 @@ public class CacheService(
   : ICacheService
 {
   /// <inheritdoc/>
-  public RsaPems RestoreRsaPems(string? key = null, TimeSpan? duration = null)
+  public RsaPems RestoreRsaPems(string key, TimeSpan? duration = null)
   {
-    if (key != null
-      && memoryCache.TryGetValue(key, out RsaPems? pems)
+    ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
+    if (memoryCache.TryGetValue(key, out RsaPems? pems)
       && pems != null)
     {
       return pems;
     }
 
     pems = RsaEncryptor.GeneratePems();
-    memoryCache.Set(pems.PublicPem, pems, duration ?? settings.EncryptionKeysLifetime);
+    memoryCache.Set(key, pems, duration ?? settings.EncryptionKeysLifetime);
 
     return pems;
   }

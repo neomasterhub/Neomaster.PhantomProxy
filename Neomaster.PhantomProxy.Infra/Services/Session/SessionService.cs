@@ -11,10 +11,12 @@ public class SessionService(
   /// <inheritdoc/>
   public SessionInfo Start()
   {
-    var pems = cacheService.RestoreRsaPems();
+    var id = Guid.NewGuid().ToString();
+    var pems = cacheService.RestoreRsaPems(id);
 
     var sessionInfo = new SessionInfo
     {
+      Id = id,
       Pem = pems.PublicPem,
       Lifetime = settings.EncryptionKeysLifetime,
     };

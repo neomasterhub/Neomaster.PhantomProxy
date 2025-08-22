@@ -9,6 +9,10 @@ function toBase64(bytes) {
   return btoa(String.fromCharCode(...new Uint8Array(bytes)));
 }
 
+function createCookie(key, value, lifetimeMs) {
+  document.cookie = `${key}=${value};Max-Age=${lifetimeMs};SameSite=Lax;Path=/`;
+}
+
 function getPemKeyBytes(pem) {
   const keyBase64 = pem.replace(/-----.*?-----/g, '').replace(/\s+/g, '');
   const keyText = atob(keyBase64);
@@ -104,8 +108,12 @@ form.addEventListener('submit', async e => {
     const encryptedUrl = encodeURIComponent(toBase64(encrypted.encrypted));
     const key = encodeURIComponent(toBase64(encrypted.key));
     const iv = encodeURIComponent(toBase64(encrypted.iv));
-    const pem = encodeURIComponent(sessionInfo.pem);
-    const response = await fetch(`/browse?url=${encryptedUrl}&key=${key}&iv=${iv}&pem=${pem}`);
+
+    createCookie('key', key, sessionInfo.lifetimeMs);
+    createCookie('iv', iv, sessionInfo.lifetimeMs);
+    createCookie('session-id', sessionInfo.id, sessionInfo.lifetimeMs);
+
+    const response = await fetch(`/browse?url=${encryptedUrl}`);
     if (!response.ok) {
       errorBox.textContent = 'Failed to fetch content.';
       errorBox.style.display = 'flex';
