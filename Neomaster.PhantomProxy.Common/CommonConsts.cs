@@ -6,9 +6,20 @@ namespace Neomaster.PhantomProxy.Common;
 public class CommonConsts
 {
   /// <summary>
-  /// Regular expression pattern for matching <c>url()</c> function.
+  /// Regular expression patterns.
   /// </summary>
-  public const string UrlFunctionRegexPattern = @"url\(\s*(?:(['""])(?<url>.*?)\1|(?<url>[^)]+))\s*\)";
+  public class RegexPatterns
+  {
+    /// <summary>
+    /// Regular expression pattern for matching <c>url()</c> function.
+    /// </summary>
+    public const string UrlFunction = @"url\(\s*(?:(['""])(?<url>.*?)\1|(?<url>[^)]+))\s*\)";
+
+    /// <summary>
+    /// Regular expression pattern for matching CSS <c>@import</c> statement.
+    /// </summary>
+    public const string CssImport = @"@import\s+(?:url\(\s*(?<quote>['""]?)(?<url>[^'"")]+)\k<quote>\s*\)|(?<quote2>['""])(?<url2>[^'""]+)\k<quote2>)";
+  }
 
   /// <summary>
   /// XML structure attribute names.
