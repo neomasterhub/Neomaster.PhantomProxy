@@ -9,7 +9,7 @@ Anonymous browser proxy inspired by [browser.lol](https://browser.lol).
 - [ ] Proxy URLs in standard SVG attributes
 - [x] Proxy URLs inside `srcset` attribute
 - [x] Proxy URLs inside `url()` functions
-- [ ] Proxy URLs inside CSS @import statements
+- [ ] Proxy URLs inside CSS `@import` statements
 
 ### Security
 - [x] Encrypt target URLs in Network tab
