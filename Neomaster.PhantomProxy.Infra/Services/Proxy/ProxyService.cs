@@ -13,7 +13,11 @@ public class ProxyService(
   : IProxyService
 {
   private static readonly Regex _urlFunctionRegex = new(
-    CommonConsts.UrlFunctionRegexPattern,
+    CommonConsts.RegexPatterns.UrlFunction,
+    RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+  private static readonly Regex _cssImportRegex = new(
+    CommonConsts.RegexPatterns.CssImport,
     RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
   private readonly HttpClient _httpClient = httpClientFactory.CreateClient(nameof(PhantomProxy));
@@ -43,6 +47,53 @@ public class ProxyService(
     };
 
     return result;
+  }
+
+  /// <inheritdoc/>
+  public string ProxyCssImportUrls(string cssText, Uri baseUri, string proxyUrlFormat, EncryptionOptions? encryptionOptions = null)
+  {
+    ArgumentNullException.ThrowIfNull(baseUri);
+    ArgumentException.ThrowIfNullOrWhiteSpace(cssText);
+    ArgumentException.ThrowIfNullOrWhiteSpace(proxyUrlFormat);
+
+    var proxiedCssText = _cssImportRegex.Replace(cssText, match =>
+    {
+      var cssImportStatement = string.Empty;
+
+      // @import url(...)
+      if (match.Groups["url"].Success)
+      {
+        var url = match.Groups["url"].Value.Trim();
+
+        if (string.IsNullOrWhiteSpace(url))
+        {
+          return match.Value;
+        }
+
+        var quote = match.Groups["quote"].Value;
+        var proxiedUrl = ProxyUrl(url, baseUri, proxyUrlFormat, encryptionOptions);
+        cssImportStatement = $"@import url({quote}{proxiedUrl}{quote})";
+      }
+
+      // @import ...
+      if (match.Groups["url2"].Success)
+      {
+        var url = match.Groups["url2"].Value.Trim();
+
+        if (string.IsNullOrWhiteSpace(url))
+        {
+          return match.Value;
+        }
+
+        var quote = match.Groups["quote2"].Value;
+        var proxiedUrl = ProxyUrl(url, baseUri, proxyUrlFormat, encryptionOptions);
+        cssImportStatement = $"@import {quote}{proxiedUrl}{quote}";
+      }
+
+      return cssImportStatement;
+    });
+
+    return proxiedCssText;
   }
 
   /// <inheritdoc/>

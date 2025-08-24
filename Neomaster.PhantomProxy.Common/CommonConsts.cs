@@ -18,7 +18,7 @@ public class CommonConsts
     /// <summary>
     /// Regular expression pattern for matching CSS <c>@import</c> statement.
     /// </summary>
-    public const string CssImport = @"@import\s+(?:url\(\s*(?<quote>['""]?)(?<url>[^'"")]+)\k<quote>\s*\)|(?<quote2>['""])(?<url2>[^'""]+)\k<quote2>)";
+    public const string CssImport = @"@import\s+(?:url\(\s*(?<quote>['""]?)(?<url>[^'"")]+)\k<quote>\s*\)|(?<quote2>['""]?)(?<url2>[^'"")\s]+)\k<quote2>)";
   }
 
   /// <summary>
