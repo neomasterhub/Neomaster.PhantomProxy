@@ -23,8 +23,9 @@ Anonymous browser proxy inspired by [browser.lol](https://browser.lol).
 - [ ] Limit length of URLs
 
 ### Content
-- [ ] Handle content with charset
+- [x] Handle content with charset
 - [ ] Optionally remove `<script>` tags
+- [ ] Optionally auto-submit clicked iframe links to proxy form
 
 ### Performance
 - [ ] Add performance measurement
