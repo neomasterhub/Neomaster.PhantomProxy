@@ -24,4 +24,9 @@ public record PhantomProxySettings
   /// Lifetime of encryption keys.
   /// </summary>
   public TimeSpan EncryptionKeysLifetime { get; init; }
+
+  /// <summary>
+  /// Auto-submit frame links via proxy form.
+  /// </summary>
+  public bool OpenFrameLinkViaForm { get; init; }
 }
