@@ -24,4 +24,9 @@ public record SessionInfo
   /// Session lifetime in milliseconds.
   /// </summary>
   public int LifetimeMs => (int)Lifetime.TotalMilliseconds;
+
+  /// <summary>
+  /// Auto-submit frame links via proxy form.
+  /// </summary>
+  public bool OpenFrameLinkViaForm { get; init; }
 }
