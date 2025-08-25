@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using Neomaster.PhantomProxy.App;
@@ -38,7 +39,17 @@ public class ProxyService(
     }
 
     var responseMessage = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
-    responseMessage.EnsureSuccessStatusCode();
+
+    // Handle 429 error.
+    // TODO: Change for unit tests.
+    // TODO: Add retry number in config file.
+    if (responseMessage.StatusCode == HttpStatusCode.TooManyRequests)
+    {
+      var delta = responseMessage.Headers.RetryAfter?.Delta ?? TimeSpan.FromSeconds(1); // TODO: Move to config file.
+      await Task.Delay(delta);
+
+      responseMessage = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+    }
 
     var result = new ProxyResponse
     {
