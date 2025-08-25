@@ -104,16 +104,24 @@ form.addEventListener('submit', async e => {
   loadingBanner.style.display = 'flex';
 
   try {
-    const encrypted = await encryptAsync(url, sessionInfo.pem);
-    const encryptedUrl = encodeURIComponent(toBase64(encrypted.encrypted));
-    const key = encodeURIComponent(toBase64(encrypted.key));
-    const iv = encodeURIComponent(toBase64(encrypted.iv));
+    let browseUrl;
+    console.log(url);
+    if (url.startsWith(location.origin)) {
+      browseUrl = url.replace(location.origin, '');
+    } else {
+      const encrypted = await encryptAsync(url, sessionInfo.pem);
+      const encryptedUrl = encodeURIComponent(toBase64(encrypted.encrypted));
+      const key = encodeURIComponent(toBase64(encrypted.key));
+      const iv = encodeURIComponent(toBase64(encrypted.iv));
 
-    createCookie('key', key, sessionInfo.lifetimeMs);
-    createCookie('iv', iv, sessionInfo.lifetimeMs);
-    createCookie('session-id', sessionInfo.id, sessionInfo.lifetimeMs);
+      createCookie('key', key, sessionInfo.lifetimeMs);
+      createCookie('iv', iv, sessionInfo.lifetimeMs);
+      createCookie('session-id', sessionInfo.id, sessionInfo.lifetimeMs);
 
-    const response = await fetch(`/browse?url=${encryptedUrl}`);
+      browseUrl = `/browse?url=${encryptedUrl}`;
+    }
+
+    const response = await fetch(browseUrl);
     if (!response.ok) {
       errorBox.textContent = 'Failed to fetch content.';
       errorBox.style.display = 'flex';
@@ -133,4 +141,24 @@ form.addEventListener('submit', async e => {
   } finally {
     loadingBanner.style.display = 'none';
   }
+});
+
+frame.addEventListener('load', () => {
+  console.log(3);
+  const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+  iframeDoc.addEventListener('click', e => {
+    const link = e.target.closest('a');
+    if (!link) return;
+
+    e.preventDefault();
+
+    const searchField = document.getElementById('browse-url');
+    const form = document.getElementById('browse-form');
+
+    const originalUrl = link.dataset.original || link.href;
+    searchField.value = originalUrl;
+
+    form.requestSubmit();
+  });
 });
