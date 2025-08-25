@@ -37,6 +37,28 @@ async function startSessionAsync() {
 
     sessionInfo = await response.json();
     console.log('New session started:', sessionInfo);
+
+    if (sessionInfo.openFrameLinkViaForm) {
+      frame.addEventListener('load', () => {
+        console.log('Frame loaded.');
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+        iframeDoc.addEventListener('click', e => {
+          const link = e.target.closest('a');
+          if (!link) return;
+
+          e.preventDefault();
+
+          const searchField = document.getElementById('browse-url');
+          const form = document.getElementById('browse-form');
+
+          const originalUrl = link.dataset.original || link.href;
+          searchField.value = originalUrl;
+
+          form.requestSubmit();
+        });
+      });
+    }
   } catch (error) {
     errorBox.textContent = 'Failed to start session.';
     errorBox.style.display = 'flex';
@@ -105,7 +127,6 @@ form.addEventListener('submit', async e => {
 
   try {
     let browseUrl;
-    console.log(url);
     if (url.startsWith(location.origin)) {
       browseUrl = url.replace(location.origin, '');
     } else {
@@ -141,24 +162,4 @@ form.addEventListener('submit', async e => {
   } finally {
     loadingBanner.style.display = 'none';
   }
-});
-
-frame.addEventListener('load', () => {
-  console.log(3);
-  const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-
-  iframeDoc.addEventListener('click', e => {
-    const link = e.target.closest('a');
-    if (!link) return;
-
-    e.preventDefault();
-
-    const searchField = document.getElementById('browse-url');
-    const form = document.getElementById('browse-form');
-
-    const originalUrl = link.dataset.original || link.href;
-    searchField.value = originalUrl;
-
-    form.requestSubmit();
-  });
 });
