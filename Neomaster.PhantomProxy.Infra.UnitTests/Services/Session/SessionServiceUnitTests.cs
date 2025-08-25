@@ -19,6 +19,7 @@ public class SessionServiceUnitTests
     _phantomProxySettings = new PhantomProxySettings
     {
       EncryptionKeysLifetime = TimeSpan.FromSeconds(1),
+      OpenFrameLinkViaForm = true,
     };
 
     var autoMock = AutoMock.GetLoose(
@@ -49,15 +50,16 @@ public class SessionServiceUnitTests
       PrivatePem = "2",
     };
     _mockCacheService
-      .Setup(m => m.RestoreRsaPems(It.Is<string?>(key => Guid.TryParse(key, out sessionIdGuid)), null))
+      .Setup(m => m.RestoreRsaPems(It.Is<string>(key => Guid.TryParse(key, out sessionIdGuid)), null))
       .Returns(pems);
 
     var sessionInfo = _sut.Start();
 
     Assert.NotNull(sessionInfo);
     Assert.Equal(pems.PublicPem, sessionInfo.Pem);
-    Assert.Equal(_phantomProxySettings.EncryptionKeysLifetime, sessionInfo.Lifetime);
     Assert.Equal(sessionIdGuid.ToString(), sessionInfo.Id);
-    _mockCacheService.Verify(v => v.RestoreRsaPems(It.Is<string?>(key => Guid.TryParse(key, out sessionIdGuid)), null), Times.Once());
+    Assert.Equal(_phantomProxySettings.EncryptionKeysLifetime, sessionInfo.Lifetime);
+    Assert.Equal(_phantomProxySettings.OpenFrameLinkViaForm, sessionInfo.OpenFrameLinkViaForm);
+    _mockCacheService.Verify(v => v.RestoreRsaPems(It.Is<string>(key => Guid.TryParse(key, out sessionIdGuid)), null), Times.Once());
   }
 }

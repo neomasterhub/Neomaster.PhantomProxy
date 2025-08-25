@@ -19,6 +19,7 @@ public class SessionService(
       Id = id,
       Pem = pems.PublicPem,
       Lifetime = settings.EncryptionKeysLifetime,
+      OpenFrameLinkViaForm = settings.OpenFrameLinkViaForm,
     };
 
     return sessionInfo;

@@ -13,6 +13,16 @@ public interface IProxyService
   Task<ProxyResponse> ProxyRequestHtmlContentAsync(ProxyRequest request);
 
   /// <summary>
+  /// Rewrites URLs inside CSS <c>@import</c> statements to proxy URLs.
+  /// </summary>
+  /// <param name="cssText">CSS text.</param>
+  /// <param name="baseUri">Base URI for resolving relative URLs.</param>
+  /// <param name="proxyUrlFormat">Proxy URL format string.</param>
+  /// <param name="encryptionOptions">Encryption options (e.g. keys, IV).</param>
+  /// <returns>Rewritten text with proxied URLs inside CSS <c>@import</c> statements.</returns>
+  string ProxyCssImportUrls(string cssText, Uri baseUri, string proxyUrlFormat, EncryptionOptions? encryptionOptions = null);
+
+  /// <summary>
   /// Rewrites URLs inside <c>url()</c> functions to proxy URLs.
   /// </summary>
   /// <param name="text">Text with <c>url()</c> functions.</param>
@@ -40,5 +50,5 @@ public interface IProxyService
   /// <param name="proxyUrlFormat">Proxy URL format string.</param>
   /// <param name="encryptionOptions">Encryption options (e.g. keys, IV).</param>
   /// <returns>Proxied URL or original if invalid.</returns>
-  public string ProxyUrl(string url, Uri baseUri, string proxyUrlFormat, EncryptionOptions? encryptionOptions = null);
+  string ProxyUrl(string url, Uri baseUri, string proxyUrlFormat, EncryptionOptions? encryptionOptions = null);
 }

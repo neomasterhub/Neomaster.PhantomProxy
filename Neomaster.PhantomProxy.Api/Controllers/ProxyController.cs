@@ -84,6 +84,8 @@ public class ProxyController(
     if (response.ContentType.StartsWith("text/", StringComparison.OrdinalIgnoreCase))
     {
       var proxiedContentText = proxyService.ProxyUrlFunctionUrls(content.Text, baseUri, proxyUrlFormat, urlEncryptionOptions);
+      proxiedContentText = proxyService.ProxyCssImportUrls(content.Text, baseUri, proxyUrlFormat, urlEncryptionOptions);
+
       if (response.ContentType == MediaTypeNames.Text.Html)
       {
         proxiedContentText = proxyService.ProxyHtmlUrls(proxiedContentText, baseUri, proxyUrlFormat, urlEncryptionOptions);
