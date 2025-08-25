@@ -73,6 +73,8 @@ public class ProxyService(
         var quote = match.Groups["quote"].Value;
         var proxiedUrl = ProxyUrl(url, baseUri, proxyUrlFormat, encryptionOptions);
         cssImportStatement = $"@import url({quote}{proxiedUrl}{quote})";
+
+        return cssImportStatement;
       }
 
       // @import ...
@@ -88,6 +90,8 @@ public class ProxyService(
         var quote = match.Groups["quote2"].Value;
         var proxiedUrl = ProxyUrl(url, baseUri, proxyUrlFormat, encryptionOptions);
         cssImportStatement = $"@import {quote}{proxiedUrl}{quote}";
+
+        return cssImportStatement;
       }
 
       return cssImportStatement;
