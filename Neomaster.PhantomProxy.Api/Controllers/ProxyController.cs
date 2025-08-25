@@ -70,6 +70,15 @@ public class ProxyController(
     };
     url = urlEncryptService.Decrypt(url, urlEncryptionOptions);
 
+    // TEMP: For demo.
+    // TODO: Create service.
+    if ((url.Contains(".org/cc/") || url.Contains(".org/index.html/cc/"))
+      && !url.EndsWith("index.html"))
+    {
+      url += "/index.html";
+      await Task.Delay(1000);
+    }
+
     // Request content.
     var request = new ProxyRequest { Url = url };
     var response = await proxyService.ProxyRequestHtmlContentAsync(request);
