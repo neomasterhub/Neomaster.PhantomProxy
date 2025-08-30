@@ -21,17 +21,21 @@ builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<IUrlEncryptService, UrlAesEncryptService>();
 builder.Services.AddMemoryCache();
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+  options.ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor;
+  options.KnownNetworks.Clear();
+  options.KnownProxies.Clear();
+});
+
 var app = builder.Build();
+app.UseForwardedHeaders();
 app.Use(async (context, next) =>
 {
   context.Response.Headers.CacheControl = "no-store, no-cache, must-revalidate, max-age=0";
   context.Response.Headers.Pragma = "no-cache";
   context.Response.Headers.Expires = "0";
   await next();
-});
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-  ForwardedHeaders = ForwardedHeaders.XForwardedProto,
 });
 app.UseStaticFiles();
 app.UseSwagger();
