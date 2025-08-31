@@ -1,0 +1,30 @@
+name: Build and Push Docker Image
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository (test-deploy branch)
+        uses: actions/checkout@v3
+        with:
+          ref: test-deploy
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: .Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/PhantomProxy:${{ github.ref_name }}
