@@ -26,5 +26,5 @@ jobs:
           context: .
           file: .Dockerfile
           push: true
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/PhantomProxy:${{ github.ref_name }}
+          tags:
+            ghcr.io/${{ github.repository_owner }}/phantomproxy:${{ github.ref_name }}
