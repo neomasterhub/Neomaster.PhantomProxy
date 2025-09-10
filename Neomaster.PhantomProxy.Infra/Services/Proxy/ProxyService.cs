@@ -69,41 +69,19 @@ public class ProxyService(
 
     var proxiedCssText = _cssImportRegex.Replace(cssText, match =>
     {
-      var cssImportStatement = string.Empty;
+      var url = match.Groups["url"].Value.Trim();
 
-      // @import url(...)
-      if (match.Groups["url"].Success)
+      if (string.IsNullOrWhiteSpace(url))
       {
-        var url = match.Groups["url"].Value.Trim();
-
-        if (string.IsNullOrWhiteSpace(url))
-        {
-          return match.Value;
-        }
-
-        var quote = match.Groups["quote"].Value;
-        var proxiedUrl = ProxyUrl(url, baseUri, proxyUrlFormat, encryptionOptions);
-        cssImportStatement = $"@import url({quote}{proxiedUrl}{quote})";
-
-        return cssImportStatement;
+        return match.Value;
       }
 
-      // @import ...
-      if (match.Groups["url2"].Success)
-      {
-        var url = match.Groups["url2"].Value.Trim();
+      var quote = match.Groups["quote"].Value;
+      var proxiedUrl = ProxyUrl(url, baseUri, proxyUrlFormat, encryptionOptions);
 
-        if (string.IsNullOrWhiteSpace(url))
-        {
-          return match.Value;
-        }
-
-        var quote = match.Groups["quote2"].Value;
-        var proxiedUrl = ProxyUrl(url, baseUri, proxyUrlFormat, encryptionOptions);
-        cssImportStatement = $"@import {quote}{proxiedUrl}{quote}";
-
-        return cssImportStatement;
-      }
+      var cssImportStatement = match.Groups["isUrl"].Success
+        ? $"@import url({quote}{proxiedUrl}{quote})"
+        : $"@import {quote}{proxiedUrl}{quote}";
 
       return cssImportStatement;
     });

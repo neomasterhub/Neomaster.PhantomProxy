@@ -13,12 +13,12 @@ public class CommonConsts
     /// <summary>
     /// Regular expression pattern for matching <c>url()</c> function.
     /// </summary>
-    public const string UrlFunction = @"url\(\s*(?:(['""])(?<url>.*?)\1|(?<url>[^)]+))\s*\)";
+    public const string UrlFunction = @"url\(\s*(?<quote>['""]?)(?<url>[^\s'"")]+)\k<quote>\s*\)";
 
     /// <summary>
     /// Regular expression pattern for matching CSS <c>@import</c> statement.
     /// </summary>
-    public const string CssImport = @"@import\s+(?:url\(\s*(?<quote>['""]?)(?<url>[^'"")]+)\k<quote>\s*\)|(?<quote2>['""]?)(?<url2>[^'"")\s]+)\k<quote2>)";
+    public const string CssImport = @"@import\s+(?:(?'isUrl'url)\(\s*(?<quote>['""]?)(?'url'[^\s'"");]+)\k<quote>\s*\)|(?<quote2>['""]?)(?'url'[^\s'"");]+)\k<quote2>);?";
   }
 
   /// <summary>
