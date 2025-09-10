@@ -1,4 +1,5 @@
 using System.Net.Mime;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using Neomaster.PhantomProxy.App;
 using Neomaster.PhantomProxy.Common;
@@ -70,13 +71,11 @@ public class ProxyController(
     };
     url = urlEncryptService.Decrypt(url, urlEncryptionOptions);
 
-    // TEMP: For demo.
-    // TODO: Create service.
+    // TODO: Create service to transform URLs.
     if ((url.Contains(".org/cc/") || url.Contains(".org/index.html/cc/"))
       && !url.EndsWith("index.html"))
     {
       url += "/index.html";
-      await Task.Delay(1000);
     }
 
     // Request content.
@@ -92,8 +91,20 @@ public class ProxyController(
 
     if (response.ContentType.StartsWith("text/", StringComparison.OrdinalIgnoreCase))
     {
-      var proxiedContentText = proxyService.ProxyUrlFunctionUrls(content.Text, baseUri, proxyUrlFormat, urlEncryptionOptions);
-      proxiedContentText = proxyService.ProxyCssImportUrls(content.Text, baseUri, proxyUrlFormat, urlEncryptionOptions);
+      var text = content.Text;
+
+      // TODO: Add service to remove analyzers.
+      if (response.ContentType.StartsWith("text/html"))
+      {
+        text = Regex.Replace(
+          text,
+          @"(matomo)|(analytics.mhts.cloud)",
+          "removed",
+          RegexOptions.IgnoreCase | RegexOptions.Singleline);
+      }
+
+      var proxiedContentText = proxyService.ProxyUrlFunctionUrls(text, baseUri, proxyUrlFormat, urlEncryptionOptions);
+      proxiedContentText = proxyService.ProxyCssImportUrls(text, baseUri, proxyUrlFormat, urlEncryptionOptions);
 
       if (response.ContentType == MediaTypeNames.Text.Html)
       {

@@ -15,16 +15,16 @@
   </div>
 
   <form id="browse-form">
-    <a href="/">
+    <a href="/" hidden>
       <img id="logo" src="img/logo.svg" alt="logo" />
     </a>
     <input id="browse-url" placeholder="https://example.com" />
     <button id="browse-button" type="submit">🔍 Browse</button>
     <div id="browse-error"></div>
-    <div id="version">v1.0.0d1</div>
+    <div id="version">v1.0.0</div>
   </form>
 
-  <iframe id="viewbox" sandbox="allow-same-origin" referrerpolicy="no-referrer"></iframe>
+  <iframe id="viewbox" sandbox="allow-scripts allow-same-origin" referrerpolicy="no-referrer"></iframe>
   <script src="index.js"></script>
 
 </body>

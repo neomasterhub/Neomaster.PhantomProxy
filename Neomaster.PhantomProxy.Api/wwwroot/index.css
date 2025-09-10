@@ -80,3 +80,10 @@ body {
   width: 100vw;
   height: calc(100vh - 50px);
 }
+
+/* TODO: Set from appsettings.json */
+@media screen and (max-width: 500px) {
+  #browse-form {
+    display: none;
+  }
+}
