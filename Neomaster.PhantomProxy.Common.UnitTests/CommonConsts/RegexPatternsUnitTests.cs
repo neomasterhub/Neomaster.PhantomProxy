@@ -11,6 +11,9 @@ public class RegexPatternsUnitTests
   [InlineData("url(x)")]
   [InlineData("url('x')")]
   [InlineData("url(\"x\")")]
+  [InlineData("url( x )")]
+  [InlineData("url( 'x' )")]
+  [InlineData("url( \"x\" )")]
   public void UrlFunctionRegex_ShouldMatch(string input)
   {
     const string expectedUrl = "x";
