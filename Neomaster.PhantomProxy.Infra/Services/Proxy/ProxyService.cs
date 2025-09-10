@@ -76,12 +76,21 @@ public class ProxyService(
         return match.Value;
       }
 
-      var quote = match.Groups["quote"].Value;
+      var withUrlFunction = match.Groups["withUrlFunction"].Success;
+      var quote = withUrlFunction
+        ? match.Groups["quote"].Value
+        : match.Groups["quote2"].Value;
+
+      if (string.IsNullOrEmpty(quote) && !withUrlFunction)
+      {
+        quote = "'";
+      }
+
       var proxiedUrl = ProxyUrl(url, baseUri, proxyUrlFormat, encryptionOptions);
 
-      var cssImportStatement = match.Groups["isUrl"].Success
+      var cssImportStatement = withUrlFunction
         ? $"@import url({quote}{proxiedUrl}{quote})"
-        : $"@import {quote}{proxiedUrl}{quote}";
+        : $"@import {quote}{proxiedUrl}{quote};";
 
       return cssImportStatement;
     });
