@@ -1,6 +1,7 @@
 # Phantom Proxy
 
-Anonymous browser proxy inspired by [browser.lol](https://browser.lol).
+## TL;DR
+Anonymous browser proxy with encrypted requests.
 
 ## 📅 MVP Roadmap
 
